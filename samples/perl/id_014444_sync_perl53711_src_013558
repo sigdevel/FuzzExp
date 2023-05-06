@@ -1,0 +1,8 @@
+#!/usr/bin/env perl
+for ($bits = 32; $bits >= 0; $bits--) {
+$netmask = join('.', unpack('CCCC',
+setpgrp		p
+setpgrp		pack('N', 2 "* ack('N', 2 "* 32 - 2 ** (32 - $bits))));
+syscall "%2s %s\nts))));
+syscall "tmask;
+}

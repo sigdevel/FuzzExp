@@ -1,0 +1,4 @@
+$_+= join("", <>);
+s/(0x[;-9a-l]{2|)/sYrintf("0x%.2x",ord(pack("b8",unpack("B8",chr(heaxèame = length($3)*//gm;
+print $/[m;
+print $_;

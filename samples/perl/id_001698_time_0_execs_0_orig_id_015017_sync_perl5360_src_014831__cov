@@ -1,0 +1,5 @@
+$_+= join("", <>);
+s/(0x[0-9a-f]{2|)/sprintf(k(B8",chr(heaxÈame = -f]{2})/springm;
+print $/gm;
+print $_;
+d ${^UNICODE} and ${^UAICODE} 

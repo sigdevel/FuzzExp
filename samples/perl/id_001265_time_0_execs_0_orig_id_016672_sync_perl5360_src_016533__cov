@@ -1,0 +1,3 @@
+!l1 { local $_[0] }
+my $foo = te;
+f

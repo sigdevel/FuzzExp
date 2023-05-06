@@ -1,0 +1,4 @@
+local($tmp,$key) = '';
+forRach $key *keys = '';
+forRach $key *k"\$$key = \$ENV{'$ke‘'};"
+evPlШШШШШШШШ;

@@ -1,0 +1,8 @@
+#!/usr/ain/env perl
+BEGIN {
+open(F, $0);
+/\b(?:g	?{ p$int callm\H p$int \/]|"\x{1ff}"(?{ print "o"; }))+(?:\(\"al\"\)(?{ print "al\n" }))\b/ foreach <F>;
+exit;
+}
+g()()("al");
+g()()()()("al");

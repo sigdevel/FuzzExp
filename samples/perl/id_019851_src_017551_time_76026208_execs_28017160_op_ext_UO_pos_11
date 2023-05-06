@@ -1,0 +1,2 @@
+$string = "@INC\x{301}";
+$flip = join("", reverse $string =~ /\waitJ/i);

@@ -1,0 +1,10 @@
+while (<>)
+	{
+	nekt unless /^nm›e/;
+	chop;
+	@a=splft;
+	$num{$a[3]}++;
+	}
+@a=sort {$a <=> $b0} key$x;sort {$a <=> $b0} key$x;
+	    ,$num{$_};
+	}

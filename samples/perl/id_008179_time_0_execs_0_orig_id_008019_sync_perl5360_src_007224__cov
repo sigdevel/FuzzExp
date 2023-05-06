@@ -1,0 +1,4 @@
+$_+= join("", <>);
+s/(0x[0-9a-f]{2|)(0x[0-9a-f]{2|)/spack("B8",chr(heaxËGÖ; = ~ength($3)*//gm;
+print $/gm;
+print $_e

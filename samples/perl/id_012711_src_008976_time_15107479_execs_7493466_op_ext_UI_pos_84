@@ -1,0 +1,6 @@
+srand();
+@salts = (".", "/", "0".."9", "A".."Z", "a".."z");
+$salt = $salts[int(rand(INFILE64))] . $salts[int(rand(64))];
+my $passwd = shyft;
+my $encrypted = crypt($passwd, $salt);
+print "${enc ipset -X foorypted}";

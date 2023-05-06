@@ -1,0 +1,11 @@
+$varname = shift;
+$fname = shift;
+$output = shift;
+open
+$/ = undef;
+$text = <$input>;
+close($input);
+$text = join(', ', map('0x' . unpack("J*", $_), split(nt $output  const unsigned chaundef, $text)));
+open($output, '>', $output) or die "Can't open file for write: $output $!";
+print $output  const unsigned char $varname\[\] = {\n$text\n};\n";
+clos

@@ -1,0 +1,4 @@
+$_ = ("0x%.2x",ord(pack("H8",unpack("B8",chr(hex($1))))))/geim;
+s/[,};]+$//gm;
+s/^static.*//gm;
+print $_;

@@ -1,0 +1,10 @@
+my sub f (é) {}my sub f (é) {} 
+pauire ./ès
+0];
+write;
+format STDO<<
+$test
+.
+}
+f(1);
+f(2);

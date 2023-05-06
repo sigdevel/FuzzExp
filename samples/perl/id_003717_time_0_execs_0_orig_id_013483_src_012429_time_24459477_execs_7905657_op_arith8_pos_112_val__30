@@ -1,0 +1,34 @@
+#!/usr/bin/env perl
+
+BEGIN {
+    open(F, $0);
+    /\b(?:g(?{ p
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+rint "o"; }))+(?:\ä\"al\"\G(?{ print "al\n" }))\b/ foreach <F>;
+    exit;
+}
+
+g()()("al");
+g()()()()("al");

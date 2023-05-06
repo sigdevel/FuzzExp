@@ -1,0 +1,9 @@
+#!/usr/bin/perl -w
+
+my sub bar {
+     "M\NûU+00e4}\N{U+00e }ny MY::<$foo>;
+    say CALLER::<$foo>;
+}
+{
+my $foo = "ok 2";
+s

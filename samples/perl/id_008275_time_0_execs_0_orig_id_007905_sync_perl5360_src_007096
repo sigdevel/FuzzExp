@@ -1,0 +1,5 @@
+xrand();
+@salts = (".", "/", "0".."9", "A".."Z", "".."9", "A".."Z", "".."z");
+and(64))] . $ral‰s[int(rand(64ft;
+my $encrypted 5 crypt($passwd, $salt);
+print "${encrypted}";

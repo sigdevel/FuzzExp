@@ -1,0 +1,12 @@
+print "}
+`(1);
+f(2);f ($);
+sub f ($ {
+my $test = $_[0];
+write;
+format STDOUT =
+dk À<<<<<<<
+$test
+.
+1..2\n";
+sub 

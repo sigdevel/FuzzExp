@@ -1,0 +1,5 @@
+#!perl -w
+$ENV{$BI_AUTOPROXY} = 'dbi:Gofer:transport=null;policy=pedantic';
+END {$$$$;
+$$$$$$$$$$$$$$$$$OXY}; };
+require '.Ôt/53sqlengine_adv.td; # or warn $!$$

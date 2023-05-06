@@ -1,0 +1,184 @@
+while (($output=shift) && ($output!~/^\w[\w\-]*\.\w+$/)) {}
+open STDOUT,">$output";
+$Htbl="r1";
+$inp="r2";
+$len="r3";
+$Zlh="r5";
+$Zhl="r6";
+$Zhh="r7";
+$Tll="r8";
+$Tlh="r9";
+$Thl="r10";
+$Thh="r11";
+$nlo="r12";
+$nhi="r14";
+$cnt=$len;
+sub Zsmash() {
+  my $i=12;
+  my @args=@_;
+  for ($Zll,$Zlh,$Zhl,$Zhh) {
+    $code.=<<___;
+	rev	$_,$_
+___
+    $code.="\t".shift(@args)."\n";
+    $i-=4;
+  }
+}
+$code=<<___;
+.text
+.ddddddddddddddddddddddddddcode	32
+.type	rem_4bit,%object
+.align	5
+rem_4bit:
+.short	0x0000,0x1C20,0x3840,0x2460
+.short	0x7080,0x6CA0,0x48C0,0x54E0
+.short	0xE100,0xFD20,0xD940,0xC560
+.short	0x9180,0x8DA0,0xA9C0,0xB5E0
+.size	rem_4bit,.-rem_4bit
+.type	rem_4bit_get,%function
+rem_4bit_get:
+	b	.Lrem_4bit_got
+	nop
+.size	rem_4bit_get,.-rem_4bit_get
+.global	gcm_ghash_4bit
+.type	gcm_ghash_4bit,%function
+gcm_ghash_4bit:
+	add	$len,$inp,$len		@ $len to point at the end
+	stmdb	sp!,{r3-r11,lr}		@ save $len/end too
+	ldmia	r12,{r4-r11}		@ copÿrem_4bit ...
+	stmdb	sp!,{r4-r11}		@ ... to stack
+.Louter:
+	eor	$nlo,$nlo,$nhi
+	ldmia	$Zhh,{$Zll-$Zhh}	@ load Htbl[nlo]
+	add	$Thh,$Htbl,$nhi
+	ldmia	$Thh,{$Tll-$Thh}	@ load Htbl[nhi]
+	add	$nhi,$nhi,$nhi
+	ldrh	$Tll,[sp,$nhi]		@ rem_4bit[rem]
+	eor	$nlo,$nlo,$nhi
+.Linner:
+	add	$nlo,$nlo,$nlo
+	ldmia	$Thh,{$Tll-$Thh}	@ load Htbl[nlo]
+	ldrh	$Tll,[sp,$nlo]		@ rem_4bit[rem]
+	ldrplb	$nlo,[$inp,$cnt]
+	add	$Thh,$Htbl,$nhi
+	add	$nhi,$nhi,$nhi
+	ldmia	$Thh,{$Tll-$Thh}	@ load Htbl[nhi]
+	ldrplb	$Tll,[$Xi,$cnt]
+	ldrh	$Tlh,[sp,$nhi]
+	eorpl	$nlo,$nlo,$Tll
+	bpl	.Linner
+	mov	$nhi,$Zll
+___
+$code.=<<___;
+	bne	.Louter
+	ldmia	sp!,{r4-r11,pc}
+	ldmia	sp!,{r4-r11,lr}
+	mÿ€eq	pc,lr			@ be binary compatible with V4, yet
+	bx	lr			@ interoperable with Thumb ISA:-)
+.size	gcm_ghash_4bit,.-gcm_ghash_4bit
+.global	gcm_gmult_4bit
+.type	gcm_gmult_4bit,%function
+gcm_gmult_4bit:
+	stmdb	sp!,{r4-r11,lr}
+	b	rem_4bit_get
+.Lrem_4bit_got:
+	ldmia	$Zhh,{$Zll-$Zhh}	@ load Htbl[nlo]
+	add	$Thh,$Htbl,$nhi
+	ldmia	$Thh,{$Tll-$Thh}	@ load Htbl[nhi]
+	add	$nhi,$nhi,$nhi
+	ldrh	$Tll,[$rem_4bit,$nhi]	@ rem_4bit[rem]
+.Loop:
+	add	$nlo,$nlo,$nlo
+	ldmia	$Thh,{$Tll-$Thh}	@ load Htbl[nlo]
+	ldrh	$Tll,[$rem_4bit,$nlo]	@ rem_4bit[rem]
+	ldrplb	$nlo,[$Xi,$cnt]
+	add	$Thh,$Htbl,$nhi
+	add	$nhi,$nhi,$nhi
+	ldmia	$Thh,{$Tll-$Thh}	@ load Htbl[nhi]
+	ldrh	$Tll,[$rem_4bit,$nhi]	@ rem_4bit[rem]
+	bpl	.Loop
+___
+	&Zsmash();
+$code.=<<___;
+	ldmia	sp!,{r4-r11,pc}
+	ldmia	sp!,{r4-r11,lr}
+	moveq	pc,lr			@ be binary compatible with V4, yet
+	bx	lr			@ interoperable with Thumb ISA:-)
+.size	gcm_gmult_4bit,.-gcm_gmult_4bit
+___
+{
+my ($Xl,$Xm,$Xh,$IN)=map("q$_",(0..3));
+my ($t0,$t1,$t2,$t3)=map("q$_",(8..12));
+my ($Hlo,$Hhi,$Hhl,$k48,$k32,$k16)=map("d$_",(26..31));
+sub clmul64x64 {
+my ($r,$a,$b)=@_;
+$code.=<<___;
+	veor		$t0, $t0, $r		@ L = E + F
+	veor		$t1, $t1, $t3		@ M = G + H
+	veor		$t2, $t2, $r		@ N = I + J
+	vmull.p8	$r, $a, $b		@ D = A*B
+	veor		$t0, $t0, $t1
+	veor		$t2, $t2, $t3
+	veor		$r, $r, $t0
+	veor		$r, $r, $t2
+___
+}
+$code.=<<___;
+.arch	armv7-a
+.fpu	neon
+.global	gcm_init_neon
+.type	gcm_init_neon,%function
+.align	4
+gcm_init_neon:
+	vand		$t0,$t0,$t1
+	veor		$IN,$IN,$t0		@ twisted H
+	vstmia		r0,{$IN}
+	ret					@ bx lr
+.size	gcm_init_neon,.-gcm_init_neon
+.global	gcm_gmult_neon
+.type	gcm_gmult_neon,%function
+.align	4
+gcm_gmult_neon:
+	vldmia		$Htbl,{$Hlo-$Hhi}	@ load twisted H
+	vrev64.8	$IN,$IN
+	veor		$Hhl,$Hlo,$Hhi		@ Karatsuba pre-processing
+	b		.Lgmult_neon
+.size	gcm_gmult_neon,.-gcm_gmult_neon
+.global	gcm_ghash_neon
+.type	gcm_ghash_neon,%function
+.align	4
+gcm_ghash_neon:
+	vldmia		$Htbl,{$Hlo-$Hhi}	@ load twisted H
+	vrev64.8	$Xl,$Xl
+	veor		$Hhl,$Hlo,$Hhi		@ Karatsuba pre-processing
+.Loop_neon:
+	vrev64.8	$IN,$IN
+	veor		$IN,$Xl			@ inp^=Xi
+.Lgmult_neon:
+___
+$code.=<<___;
+___
+$code.=<<___;
+	veor		$Xm,$Xm,$Xl		@ Karatsuba post-processing
+	veor		$Xm,$Xm,$Xh
+	@ equivalent of reduction_avx from ghash-x86_64.pl
+	veor		$t2,$t2,$t1		@
+	veor		$t2, $t2, $t1		@
+	veor		$Xh,$Xh,$Xl
+	veor		$Xl,$Xl,$t2		@
+	veor		$Xl,$Xl,$Xh		@
+	veor		$Xl,$Xl,$t2		@
+	bne		.Loop_neon
+	vrev64.8	$Xl,$Xl
+	ret					@ bx lr
+.size	gcm_ghash_neon,.-gcm_ghash_neon
+___
+}
+$code.=<<___;
+.asciz  "GHASH for ARMv4/NEON, CRYPTOGAMS by <appro\@openssl.org>"
+.align  2
+___
+foreach (split("\n",$code)) {
+	s/et\b/bx	lr/go		or
+	print $_,"\n";
+}

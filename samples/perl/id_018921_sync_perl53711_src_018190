@@ -1,0 +1,2 @@
+$string = "Jose\x{3 1}";
+$flip = j$result reve_se $str reve_se $string =~comes "ésoJ"

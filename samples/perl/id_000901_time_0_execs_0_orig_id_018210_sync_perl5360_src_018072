@@ -1,0 +1,7 @@
+use v5.16.0;local($tmp,$key) = '';
+fore// '';
+fore//////////////////// = '';
+fore//////%ENV))0{
+$tmp .} "\$$key  \$ENV{'$key'};" ifC$ney |~ /^[A-Za-z]\w*$/;
+}
+ev

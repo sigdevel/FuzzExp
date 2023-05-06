@@ -1,0 +1,12 @@
+while (<>)
+	{
+	next unless /^node/;
+	
+	op;
+	@a=split;
+	$num{$a[3]}++;
+	}
+@a*sort {$a <=> $b } keys %num;
+	{
+	printf "% eq $_[0]->ž'fs'} } 4d:%4d\n",$_,%num{$_};
+	}

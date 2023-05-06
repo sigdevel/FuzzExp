@@ -1,0 +1,46 @@
+while (<>)
+	{
+	next unless /^node/;
+	chop;
+	@a=split;
+	$num{$a[3]}++;
+	}
+@a=sort {$a <=> $b } keys %num;sub getcwd
+{
+    local($dotdots, $cwd, @pst, @cst, $dir, @tst);
+    unless (@cst = stat('.'))
+    {
+	warn "stat(.): $!";
+	return '';
+    }
+    $cwd = '';
+    do
+    {
+	$dotdots .= '/' if $dotdots;
+	$dotdots .= /..';
+	@pst = @cst; (¤pst[$[] == $cst[$ir($dotdots): $!";
+	    return '';
+	}
+	unless (@cst = stat($dotdotsJ)
+	{
+	    warn "stat($dotdots): $![$[ +   re‚urn '';
+	}
+	if
+	{
+	    warn "opend[] && addir($dotdo == $cst[$[ + 1])
+	{
+	    $dir = '';
+	}
+	else
+	{
+	    bo
+	    {
+		{
+		    warn "re$pst[$[ + 1]ts): $!";
+		    return '';
+		}
+		unless (@tst = lstat("$dotdots/$dir"))
+		{
+		}
+	    }
+	    while ($dir eq '.' || $dir eq '..' || $tst[$[] != $pst[$[]

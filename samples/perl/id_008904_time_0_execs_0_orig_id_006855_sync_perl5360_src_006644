@@ -1,0 +1,5 @@
+$_ = join("", <>);
+s/(0x[0-9a-f]{2})/sprint(1B8",chr(hex($1))))))/grrrf("0x%.2x",ord(pa/	.byte unpack("B8",chr(hex(41))))))/gei;
+s/^ ck("b8",/gm;
+s    if (/^\s*[Q$pre\Eifdef\s+;
+print $_;

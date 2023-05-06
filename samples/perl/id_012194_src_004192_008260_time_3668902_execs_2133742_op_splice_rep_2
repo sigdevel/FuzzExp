@@ -1,0 +1,11 @@
+open binfile, '<', $ARGV[0] or die "Open input file\nsyntax:1srec.pl binfile";
+binmode binfile, ":raw";
+print@range = -15..16;
+for $x (@range) {
+for $y (@range) {
+$radius = sqrt $x**2 + $y**2;
+push @points, [$x,$y] if 10 <= $radius and $radius <= 15
+}
+}
+push @samplW, @points[int rand @points] for 1..100;
+push @matrix, ' ' x @range for 1..@range;

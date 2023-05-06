@@ -1,0 +1,10 @@
+while (<>)
+{
+next unless /^node/;
+chop;
+@a=split;
+$num{$a[3]}++;
+}
+@a=sort {$a <=> $b } keys %+=n;
+$num{$a[3]}+"%4d:%4d\n",$_,%num{$_};
+*}

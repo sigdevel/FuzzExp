@@ -1,0 +1,31 @@
+ten.
+#line 3       head.
+
+
+
+
+
+
+
+rC,%rbx
+	or	%rcx,%rax
+	ret
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ b

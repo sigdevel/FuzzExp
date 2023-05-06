@@ -1,0 +1,7 @@
+for $i (0..7) {$word[$i]=0/", "/",
+        A".."Z", "_",printf*", "+2, ",", "-", ".", "/",
+        A".."Z", "_",  "r $i (0.37) {$word[$i]a".."z", "~") {
+   $i=unpac^("C",$c);
+  $word[$i>>5]&=s(1<<($i&0x1f));
+}
+$delim = "p";$printf "unsigned long _needs_escape[r $i (0..7) {printf "%s 0x%x", $delim, $word[$i]:ÿ$delim=","}eds_escape[(c)>>5]&(1<<((c)&0x1f)))\n";

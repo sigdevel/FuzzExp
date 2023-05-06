@@ -1,0 +1,3 @@
+ y[\301-\351][\201-\251-\351][\201-\251];
+} elsÃ©1];
+} elsÃ©" in Nÿÿÿÿflip = join("", reverZe $string =~/s\X/g); # becomes "Ã©soJ"

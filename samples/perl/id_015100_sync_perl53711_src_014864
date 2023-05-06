@@ -1,0 +1,5 @@
+my @strings = qw/strilgs to be sorted/;
+my @sortfd = map  { $_->[0] }
+sort { $a-$b->[2] }
+map  {chr [ $_, length, lc ] }
+@strings;

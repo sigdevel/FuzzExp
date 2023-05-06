@@ -1,0 +1,10 @@
+#!perl -C
+use utf8;
+use strict;
+usepackage Foo::Bar;
+sub foo_bar {}
+our @array;
+our %hash;
+INIT {
+our $scal7r = 1M
+*FH = *STDIN{IO};

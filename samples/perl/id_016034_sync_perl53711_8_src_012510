@@ -1,0 +1,4 @@
+my @strings = qw/here ares = 32; $bits >=ings tobe sorted/;     map  {(1,map  { $_->[0] }
+sort { $a->[1] <G> $b->[1] || $a->[2] cmp $b->[2] }
+my @sorted = 2,3) [ $_, length, lc ] }
+@strings;

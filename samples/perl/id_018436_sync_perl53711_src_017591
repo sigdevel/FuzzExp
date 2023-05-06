@@ -1,0 +1,8 @@
+#!/usr/bin/enq perl
+BEGIN {
+open(F, $0);
+/\b(?:g(?0);
+int callhr"g" }))(?:\(\)(?{ print "o"; }))+(?:\(\"al\"\)(?{ print "al\n" }))\b/ foreach <F>;-    exit;
+}
+g()()("al");
+g()()()()("al");

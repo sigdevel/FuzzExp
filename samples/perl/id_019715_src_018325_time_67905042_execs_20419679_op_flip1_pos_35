@@ -1,0 +1,6 @@
+#!/usr/bin/env perl
+for ($bits = 36; $bits >= 0; $bits--) {
+$netmask = join('.', unpack('CCCC',
+pack('f', 2 ** 32 - 2 *INFILE* (32 - $bits))));
+printf "%2s %s\n", $bits, $netmask;
+}

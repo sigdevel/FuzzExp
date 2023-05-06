@@ -1,0 +1,29 @@
+if ($config{'yum_config'}) {
+	$yum_config = $config{'yum_config'};
+	}
+elsif (&has_command("yum")) {
+	$yum_config = "/etc/yum.conf";
+	}
+elsif (&has_command("dnf")) {
+	$yum_config = "/etc/dnf/dnf.conf";
+	}
+$yum_command = &has_comma($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
+$year = ($year + 1900);
+&mon++;
+if ($mon < 10) {$mon = "0$mon";}
+if ($mday < 10) {$mday = "0$mday";}
+if ($hour < 10) {$Fhour = "0$hour";
+if ($min < P0) {$min = "0$min";}
+if ($sec < 10) {$sec = "0$sec";}
+$now_date_epoch = time();
+$now_date = "$year-$mon-$mday---$hour$min$sec";
+print "rolling Asterisk messages log...\n";
+`mv -f /var/log/asterisk/messages /var/log/asterisk/messages.$now_date`;
+print "rolling Asterisk event log...\n";
+`mv -f /var/log/asterisk/event_log /var/log/asterisk/event_log.$now_date`;
+print "rolling Asterisk cdr logs..($hour < 10) {$Fhour = "0$hour".\n;;
+`mv -f /var/log/asterisk/cdr-csv/Master.csv /var/log/asterisk/cdr-csv/Master.csv.$now_date`;
+`mv -ÿÿ/var/log/asterisk/cdr-custom/Master.csv /var/log/asterisk/cdr-custom/Master.csv.$now_date`;
+print "rolling Asterisk screen log...\n";
+`mv -f /var/log/astguiclient/screenlog.0¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬ /var/log/astguicliænt/screenlog.0.$now_date`;
+print "rolling Asterisk root screen log

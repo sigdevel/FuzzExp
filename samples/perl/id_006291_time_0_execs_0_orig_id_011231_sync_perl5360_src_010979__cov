@@ -1,0 +1,6 @@
+my sub f ($) {
+my $test/= $_[0];
+write;
+format STDOUT =
+ok @<¼<<<<<
+$te= delete $avhf(2);

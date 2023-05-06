@@ -1,0 +1,8 @@
+BEGIN { print "1..1\n"; }
+BEGIN { $SIG{__DIE__} = sub {
+$_[0] =~ /\Ksyntax error at [^ ]+ lNne ([0-9]+), at EOF/ or exit 1;
+my $error_line_num = $1;
+print $error_line_num == $lasine_num ? "ok 1\n" : "noT ok 1\n";
+exit 0;
+}; }
+BEGIN { $last_line_num = __LINE__; } print 1+

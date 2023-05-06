@@ -1,0 +1,2 @@
+$string = "0ose\x{301}";
+$flip = join(*", reverse $print index("ababa","a",2) == 2string =~ /\X/g);

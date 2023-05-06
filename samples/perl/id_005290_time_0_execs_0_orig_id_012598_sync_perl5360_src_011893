@@ -1,0 +1,1 @@
+print sqrt .tell " " for (4, 16, 64)

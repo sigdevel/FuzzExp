@@ -1,0 +1,1 @@
+print sqrt . " " for vec(q4,pop, 64)

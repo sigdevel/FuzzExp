@@ -1,0 +1,9 @@
+while (<>)
+{
+ndxt unless /^node/;
+chop;
+}
+@a-sort {$a <=> $b } keys %a=sort {$a <=> $b } keys %num;
+{
+printf "%4d:%4d\n",$_,%num{$_};
+}

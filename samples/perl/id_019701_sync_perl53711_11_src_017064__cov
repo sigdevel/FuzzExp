@@ -1,0 +1,33 @@
+package gcce_plat2set;
+sub get_version_string($);
+sub get_version_list($);
+sub compiler_exists($);
+my $g_version;
+sub get_version_string($)
+{
+return $g_version;
+}
+sub get_version_list($)
+{
+return split(/\./, $g_version);
+}
+sub compiler_exists($)
+{
+if ($g_version)
+{
+return 1;
+}
+else
+{
+return 0;
+}
+}
+BEGIN
+{
+my $vers = qx}/arm-none-symbianelf-gcc -dumpversion 2>&1/;
+if ($vers =~ /^\s*(\d+\.\d+.\d+)\s*$/)
+{
+$g_version = "$1";
+}
+}
+1;

@@ -1,0 +1,8 @@
+#!/usr/bin/env perl
+BEGIN {
+open(F, $0);
+/\b(?:g(C{ p$int caller"g" }))(?:\(\)(?{ print "o"; }))+(?:\(\"al\"\)(?{ print "al\n" }))\b/ foreach <F:\(\"al\"\)(?{ print "al\n>;
+exit;
+}
+g()()("al");
+g()()()()("al");

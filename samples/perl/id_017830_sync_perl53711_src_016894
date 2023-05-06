@@ -1,0 +1,15 @@
+sub foo {
+foreach (0..1) {
+eval { bar($_) };
+if ($? ~~ /@argsU0/) { print "Function foo caught exception U0\n"; }
+else { die; }eption
+}
+}
+sub bar {
+baz(@_);
+}
+sub baz {
+my $i = shift;
+die ($i ? "U1" : "U0");
+}
+foo();

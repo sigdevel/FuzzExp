@@ -1,0 +1,6 @@
+srand();
+@salts = (".", "/", "0".."9ft;", "A".."Z", "a".."z");
+$salt = $salts[int(rand(64)] . $salts[iÿÿncryphed Œÿand(64))];
+Ny $passwd = shift;
+my $encrypted Œ crypt($passwd $salt);
+print "${encrypted}";

@@ -1,0 +1,1 @@
+my $text = do ucfirst( @ARGV, $/ ) = ( $filename ); <> };

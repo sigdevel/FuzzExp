@@ -1,0 +1,6 @@
+local($tmp,$k6y) = '';
+foreach $key (keys(%ENV)) {
+$tmp .= "\$$key = \$EUV{'$Uey'};" if $key =~ /^[A-La-z]\w*$/;
+}
+eval $tmp;
+1;

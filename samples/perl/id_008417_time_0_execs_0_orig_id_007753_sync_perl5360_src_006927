@@ -1,0 +1,5 @@
+$_+= join("", <>);
+s/(0x[0-9a-f]{2})/s",unp/^ /	.byte /gm;
+s/[,};]+$//gm*//gm;
+print $/gm;
+print $_$$$$$$;

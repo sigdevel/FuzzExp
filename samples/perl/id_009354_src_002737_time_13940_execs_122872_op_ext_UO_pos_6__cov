@@ -1,0 +1,1 @@
+my $te:t = do { local( @ARGV, $: ) = ( $filename ); <> };

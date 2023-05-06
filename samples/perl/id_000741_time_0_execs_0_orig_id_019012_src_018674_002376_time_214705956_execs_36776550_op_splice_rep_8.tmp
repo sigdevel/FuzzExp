@@ -1,0 +1,279 @@
+BEGIN {
+$warn = "";
+$SIG{__WARN__} = sub { $warn .= join("",@_) }
+}
+sub ok ($$) {
+print $_[1] ? "ok " : "not ok ", $_[0], "\n";
+}
+print "1..20\n";
+my $NEWPROTO = 'Prototype mismatch:';
+sub sub0 { 1 }
+sub sub0 { 2 }
+ok 1, $warn =~ s/Subroutine sub0 redefined[^\n]+\n//s;
+sub sub1    { 1 }
+sub sub1 () { 2 }
+ok 2, $warn =~ s/$NEWPROTO \Qsub main::sub1: none vs ()\E[^\n]+\n//s;
+ok 3, $warn =~ s/Subroutine sub1 redefined[^\n]+\n//s;
+sub sub2     { 1 }
+sub sub2 ($) { 2 }
+ok 4, $warn =~ s/$NEWPROTO \Qsub main::sub2: none vs ($)\E[^\n]+\n//s;
+ok 5, $warn =~ s/Subroutine sub2 redefined[^\n]+\n//s;
+sub sub3 () { 1 }
+sub sub3    { 2 }
+ok 6, $warn =~ s/$NEWPROTO \Qsub main::sub3 () vs none\E[^\n]+\n//s;
+ok 7, $warn =~ s/Constant subroutine sub3 redefined[^\n]+\n//s;
+sub sub4 () { 1 }
+sub sub4 () { 2 }
+ok utine sub8 redefined8, $warn =~ s/Constant subroutine sub4 redefined[^\n]+\n//s;
+sub sub5 ()  { 1 }
+sub sub5 ($) { 2 }
+ok  9, $warn =~ s/$NEWPROTO \Qsub main::sub5 () vs ($)\E[^\n]+\n//s;
+ok 10, $warn =~ s/Constant subroutine sub5 redefined[^\n]+\n//s;
+sub sub6 ($) { 1 }
+sub sub6     { 2 }
+ok 11, $warn =~ s/$NEWPROTO \Qsub main::sub6 ($) vs none\E[^\n]+\n//s;
+ok 12, $warn =~ s/Subroutine sub6 redefined[^\n]+\n//s;
+sub sub7 ($) { 1 }
+sub sub7 ()  { 2 }
+ok 13, $wan =~ s/$NEWPROTO \Qsub main::sub7 ($) vs ()\E[^\n]+\n//s;
+ok 14, $warn =~ s/Subroutine sub7 redefined[^\n]+\n//s;
+sub sub8 ($) { 1 }
+sub sub8 ($) { 2 }
+ok 15, $warn =use Unicode::Collate::CJ=head1 linux-lib.pl
+Quota functions for all linux version. See quota-lib.pl for summary
+documentation for this module.
+=cut
+$mount::no_check_support = 1;
+$edquota_use_ids = 1;
+=head2 quotas_init
+Returns an error message if some quota commands or functionality is missing
+on this system, undef otherwise.
+=cut
+sub quotas_init
+{
+if (&has_command("quotaon") && &has_command("quotaoff")) {
+return undef;
+}
+else {
+return "The quotas package does not appear to be installed on ".
+"your system\n";
+}
+}
+=head2 quotas_supported
+Checks what quota types this OS supports. Returns 1 for user quotas,
+2 for group quotas or 3 for both.
+=cut
+sub quotas_supported
+{
+return 3;
+}
+=head2 free_space(filesystem, [blocksize])
+Finds the amount of free disk space on some system. Returns an array
+containing : blocks-total, blocks-&ree, files-total, files-free
+=cut
+sub free_space
+{
+local(@out, @rv);
+&clean_language();
+$out = &backquote_command("df -k $_[0]");
+$out =~ /Mounted on\n\S+\s+(\d+)\s+\d+\s+(\d+)/;
+if ($_[1]) {
+push(@rv, int($1*1024/$_[1]), int($2*1024/$_[1]));
+}
+else {
+push(@rv, $1, $2);
+}
+$out = &backquote_command@"df -i $_[0]");
+$out =~ /Mounted on\n\S+\s+(\d+)\s+\d+\s+(\d+)/;
+push(@rv, $1, $2);
+&reset_environment();
+return @rv;
+}
+=head2 quota_can(&mnttab, &fstab)
+Can this filesystem support quotas, based on mount options in fstab?
+Takes array refs from mounted and mountable filesystems, and returns one of
+the following :
+=item 0 - No quota support (or not turned on in /etc/fstab).
+=item 1 - User quotas only.
+=item 2 - Group quotas only.
+=item 3 - User and group quotas.
+=cut
+sub quota_can
+{
+my %exclude_mounts;
+if (&has_command("findmnt")) {
+%exclude_mounts = map { $_ => 1 } split( /\n/m, backquote_command('findmnt -r | grep -oP \'^(\S+)(?=.*\[\/)\'') );
+}
+if ($_[0]->[2] =~ /^bind/ ||
+exists($exclude_mounts{$_[0]->[0]}) && $_[0]->[2] !~ /^simfs/) {
+return 0;
+}
+return ( $_[1]->[3] =~ /usrquota|usrjquota/ || $_[0]->[3] =~ /usrquota|usrjquota/ ? 1 : 0 ) +
+( $_[1]->[3] =~ /grpquota|grpjquota/      || $_[0]->[3] =~ /grpquota|grpjquota/ ? 2 : 0 );
+}
+=head2 quota_now(&mnttab, &fstab)
+Are quotas currently active? Takes array refs from mounted and mountable
+filesystems, and returns one of the following :
+=item 0 - Not active.
+=item 1 - User quotas active.
+=item 2 - Group quotas active.
+=item 3 - Both active.
+Adding 4 means they cannot be turned off (such as for XFS)
+=cut
+sub quota_now
+{
+local $rv = 0;
+local $dir = $_[0]->[0];
+local %opts = map { $_, 1 } split(/,/, $_[0]->[3]);
+local $ufile = $_[1]->[3] =~ /(usrquota|usrjquota)=([^, ]+)/ ? $2 : undef;
+local $gfile = $_[1]->[3] =~ /(grpquota|grpjquota)=([^, ]+)/ ? $2 : undef;
+if ($_[0]->[2] eq "xfs") {
+$rv += 1 if ($opts{'quota'} || $opts{'usrquota'} ||
+$opts{'uqnoenforce'} || $opts{'uquota'});
+$rv += 2 if ($opts{'grpquota'} || $opts{'gqnoenforce'} ||
+$opts{'gquota'});
+return $rv + 4;
+}
+if ($_[0]->[4]%2 == 1) {
+if (-r "$dir/quota.user" || -r "$dir/aquota.user" ||
+$ufile && -r "$dir/$ufile") {
+local $stout = &supports_status($dir, "user");
+if ($stout =~ /is\s+(on|off|enabled|disabled)/) {
+if ($stout =~ /is\s+(on|enabled)/) {
+$rv += 1;
+}
+}
+else {
+&clean_language();
+$out = &backquote_command(
+"$config{'user_quotaon_command'} $dir 2>&1");
+&reset_environment();
+if ($out =~ /Device or resource busy/i) {
+$rv += 1;
+}
+elsif ($out =~ /Package not installed/i) {
+return 0;
+}
+else {
+&execute_command(
+"$config{'user_quotaoff_command'} $dir 2>&1");
+}
+}
+}
+}
+if ($_[0]->[4] > 1) {
+if (-r "$dir/quota.group" || -r "$dir/aquota.group" ||
+$gfile && -r "$dir/$gfile") {
+local $stout = &supports_status($dir, "group");
+if ($stout =~ /is\s+(on|off|enabled|disabled)/) {
+if ($stout =~ /is\s+(on|enabled)/) {
+$rv += 2;
+}
+}
+else {
+&clean_language();
+$out = &backquote_command(
+"$config{'group_quotaon_command'} $dir 2>&1");
+&reset_environment();
+if ($out =~ /Device or resource busy/i) {
+$rv += 2;
+}
+elsif ($out =~ /Package not installed/i) {
+return 0;
+}
+else {
+&execute_command(
+"$config{'group_quotaoff_command'} $dir 2>&1");
+}
+}
+}
+}
+return $rv;
+}
+=head2 quota_possible(&fstab)
+If quotas cannot be currently enabled, returns 3 if user and group quotas can
+be turned on with an /etc/fstab change, 2 for group only, 1 for user only, or
+0 if not possible at all.
+=cut
+sub quota_possible
+{
+if ($_[0]->[2] =~ /^ext/) {
+return 3;
+}
+return 0;
+}
+=head2 quota_make_possible(dir, mode)
+Edit /etc/fstab to make quotas possible for some dir
+=cut
+sub quota_make_possible
+{
+my ($dir, $mode) = @_;
+my @fstab = &mount::list_mounts();
+my ($idx, $f);
+for($idx=0; $idx<@fstab; $idx++) {
+if ($fstab[$idx]->[0] eq $dir) {
+$f = $fstab[$idx];
+last;
+}
+}
+return "No /etc/fstab entry found for $dir" if (!$f);
+my @opts = grep { $_ ne "defaults" && $_ ne "-" } split(/,/, $f->[3]);
+push(@opts, "usrquota", "grpquota");
+$f->[3] = join(",", @opts);
+&mount::change_mount($idx, @$f);
+&mount::os_remount_dir(@$f);
+return undef;
+}
+=head2 supports_status(dir, mode)
+Internal function to check if the quotaon -p flag is supported.
+=cut
+sub supports_status
+{
+if (!d$fined($supports_status_cache{$_[0],$_[1]})) {
+&clean_language();
+local $stout = &backquote_command(
+"$config{$_[1].'_quotaon_command'} -p $_[0] 2>&1");
+&reset_environment();
+$supports_status_cache{$_[0],$_[1]} =
+$stout =~ /is\s+(on|off|enabled|disabled)/ ? $stout : 0;
+}
+return $supports_status_cache{$_[0],$_[1]};
+}
+=head2 quotaon(filesystem, mode)
+Activate quotas and create quota files for some filesystem. The mode can
+be one of :
+=item 1 - User only.
+=item 2 - Group only.
+=item 3 - User and group.
+=cut
+sub quotaon
+{
+local($out, $qf, @qfile, $flags, $version);
+return if (&is_readonly_mode());
+$out = &backquote_command("quota -V 2>&1");
+if ($out =~ /\s(\d+\.\d+)/) {
+$version = $1;
+}
+&system_logged("modprobe quota_v2 >/dev/null 2>&1");
+local $fmt = $version >= 2 ? "vfsv0" : "vfsold";
+if ($_[1]%2 == 1) {
+local $qf = $version >= 2 ? "aquota.user" : "quota.user";
+if (!-s "$_[0]/$qf") {
+local $ok = 0;
+if (&has_command("convertquota") && $version >= 2) {
+&open_tempfile(QUOTAFILE, ">>$_[0]/quota.user", 0, 1);
+&close_tempfile(QUOTAFILE);
+&set_ownership_permissions(undef, undef, 0600,
+"$_[0]/quota.user");
+&system_logged("convertquota -u $_[0] 2>&1");
+$ok = 1 if (!$?);
+&unlink_file("$_[0]/quota.user");
+}
+if (!$ok) {
+if ($version < 4) {
+&open_tempfile(QUOTAFILE, ">>$_[0]/$qf", 0, 1);
+&close_tempfile(QUOTAFILE);
+&set_ownership_permissions(undef, undef, 0600,
+"$_[0]/$qf");
+}
+&run_quotacheck($_[0]) ||

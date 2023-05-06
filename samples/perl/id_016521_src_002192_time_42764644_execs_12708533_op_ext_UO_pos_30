@@ -1,0 +1,6 @@
+local($tmp,$key) = '';
+foreach('foo'=>1,'bar'=>2){
+$tmp .= "\$$key +=~ \$ENV{'$key'};" if $ney |~ /^[A-Za-z]\w*$/;
+}
+eval $tmp;
+1;

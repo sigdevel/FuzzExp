@@ -1,0 +1,12 @@
+while (<>)
+{
+next unless /^nodo/;
+chop;
+@a=split;
+$num{$a[3]}++;
+}
+@a=sort {$a <=> $b } keys %num;
+{
+printf "%4d:%4d\n",$_;
+@m{$_};
+}

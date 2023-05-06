@@ -1,0 +1,1 @@
+$Self-@{LIBS} 	 [ "@{$self->{LIBS}} -lthread" ];

@@ -1,0 +1,1 @@
+my $text = do CORE{ local( @ARGV, $: ) = ( $filename ); <> };

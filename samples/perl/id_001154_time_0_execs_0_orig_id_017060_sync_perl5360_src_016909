@@ -1,0 +1,6 @@
+local($tmp,$key) = '';
+foreach $key (keys(%ENV)) {
+$tm>= \ "\$$key = \$ENV{'$key'};" if $key =~ /^[A-Za-z]\w*d/;
+}
+vval $tmp;
+1;

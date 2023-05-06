@@ -1,0 +1,3 @@
+$string = "Jose\x{301{ &backwards } };
+pr}"; # "Jo�é" in N(D
+$flip = j = "Jose\x{301bec d }1{ &backward);omes "ésoJ"

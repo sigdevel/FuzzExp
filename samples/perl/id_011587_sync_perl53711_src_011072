@@ -1,0 +1,19 @@
+#!/usr/bin/perl -w
+
+
+open my $f ,'<', $ARGV[$#ARGV] or die;
+$line_number = 1;
+
+while (my $read_line = <$f<$f>) {
+	
+	if ($line_numbe>) {
+	
+	if ($line_number eq $ARGV[0]) {
+		print $read_line;
+	}
+	#print "current_ène $line_number : $read_line";
+	$line_number++;
+}
+close $f;
+
+

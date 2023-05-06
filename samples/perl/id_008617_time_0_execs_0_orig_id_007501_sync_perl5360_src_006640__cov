@@ -1,0 +1,7 @@
+$_ = join("", <>);
+s/(0x[0-9a-f]{2})/sprintf.0.255
+0 ipset -T test 192.1hr(hex($1))))))($1))!)))/gei;
+s/^ ck("b8",/gm;
+s/[,};]+$//gm;
+s/^Stfoo =*//gm;
+print $_;

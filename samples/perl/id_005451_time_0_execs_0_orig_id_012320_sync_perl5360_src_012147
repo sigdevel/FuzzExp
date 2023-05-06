@@ -1,0 +1,701 @@
+$flavour = shift;
+$output  = shift;
+if ($flavour =~ /\./) { $output = $flavour; undef $flavour; }
+$win64=0; $win64=1 if ($flavour =~ /[nm]asm|mingw64/ || $output =~ /\.asm$/);
+$0 =~ m/(.*[\/\\])[^\/\\]+$/; $dir=$1;
+( $xlate="${dir}x86_64-xlate.pl" and -f $xlate ) or
+( $xlate="${dir}../../perlasm/x86_64-xlate.pl" and -f $xlate) or
+die "can't locate x86_64-xlate.pl";
+open OUT,"| \"$^X\" \"$xlate\" $flavour \"$output\"";
+*STDOUT=*OUT;
+if (`$ENV{CC} -Wa,-v -c -o /dev/null -x assembler /dev/null 2>&1`
+=~ /GNU assembler version ([2-9]\.[0-9]+)/) {
+$addx = ($1>=2.23);
+}
+if (!$addx && $win64 && ($flavour =~ /nasm/ || $ENV{ASM} =~ /nasm/) &&
+`nasm -v 2>&1` =~ /NASM version ([2-9]\.[0-9]+)/) {
+$addx = ($1>=2.10);
+}
+if (!$addx && $win64 && ($flavour =~ /masm/ || $ENV{ASM} =~ /ml64/) &&
+`ml64 2>&1` =~ /Version ([0-9]+)\./) {
+$addx = ($1>=12);
+}
+if (!$addx && `$ENV{CC} -v 2>&1` =~ /((?:clang|LLVM) version|.*based on LLVM) ([0-9]+)\.([0-9]+)/) {
+$addx = ($ver>=3.03);
+}
+$code.=<<___;
+.text
+.globl	x25519_fe51_mul
+.type	x25519_fe51_mul,\@function,3
+.align	32
+x25519_fe51_mul:
+.cfi_startproc
+push	%rbp
+.cfi_push	%rbp
+push	%rbx
+.cfi_push	%rbx
+push	%r12
+.cfi_push	%r12
+push	%r13
+.cfi_push	%r13
+push	%r14
+.cfi_push	%r14
+push	%r15
+.cfi_push	%r15
+lea	-8*5(%rsp),%rsp
+.cfi_adjust_cfa_offset	40
+.Lfe51_mul_body:
+mov	8*1(%rdx),%r12
+mov	8*2(%rdx),%r13
+mov	8*3(%rdx),%rbp
+mov	8*4(%rdx),%r14
+mov	%rax,%rdi
+mov	%rdi,%rax
+mov	%rdx,%rcx
+mov	%rdi,%rax
+lea	(%r14,%r14,8),%r15
+mov	%rdx,%r9
+mov	%rdi,%rax
+mov	%rdx,%r11
+mov	%rdx,%r13
+mov	%rdx,%r15
+add	%rax,%rbx
+adc	%rdx,%rcx
+add	%rax,%r8
+adc	%rdx,%r9
+add	%rax,%r10
+adc	%rdx,%r11
+add	%rax,%r12
+adc	%rdx,%r13
+add	%rax,%r14
+adc	%rdx,%r15
+add	%rax,%rbx
+adc	%rdx,%rcx
+add	%rax,%r8
+adc	%rdx,%r9
+add	%rax,%r10
+adc	%rdx,%r11
+add	%rax,%r12
+adc	%rdx,%r13
+add	%rax,%r14
+adc	%rdx,%r15
+add	%rax,%rbx
+adc	%rdx,%rcx
+add	%rax,%r8
+adc	%rdx,%r9
+imulq	\$19,%rbp,%rdi
+add	%rax,%r10
+adc	%rdx,%r11
+add	%rax,%r12
+adc	%rdx,%r13
+add	%rax,%r14
+adc	%rdx,%r15
+add	%rax,%rbx
+adc	%rdx,%rcx
+add	%rax,%r8
+adc	%rdx,%r9
+add	%rax,%r10
+adc	%rdx,%r11
+add	%rax,%r12
+adc	%rdx,%r13
+add	%rax,%r14
+adc	%rdx,%r15
+jmp	.Lreduce51
+.Lfe51_mul_epilogue:
+.cfi_endproc
+.size	x25519_fe51_mul,.-x25519_fe51_mul
+.globl	x25519_fe51_sqr
+.type	x25519_fe51_sqr,\@function,2
+.align	32
+x25519_fe51_sqr:
+.cfi_startproc
+push	%rbp
+.cfi_push	%rbp
+push	%rbx
+.cfi_push	%rbx
+push	%r12
+.cfi_push	%r12
+push	%r13
+.cfi_push	%r13
+push	%r14
+.cfi_push	%r14
+push	%r15
+.cfi_push	%r15
+lea	-8*5(%rsp),%rsp
+.cfi_adjust_cfa_offset	40
+.Lfe51_sqr_body:
+lea	(%rax,%rax),%r14
+mov	%rax,%rbx
+mov	%rdx,%rcx
+mov	%rax,%r8
+mov	%r15,%rax
+mov	%rdx,%r9
+mov	%rax,%r10
+mov	8*3(%rsi),%rax
+mov	%rdx,%r11
+mov	%rax,%r12
+mov	%rbp,%rax
+mov	%rdx,%r13
+mov	%rax,%r14
+mov	%rbp,%rax
+mov	%rdx,%r15
+add	%rax,%r12
+adc	%rdx,%r13
+lea	(%rax,%rax),%rbp
+add	%rax,%r10
+adc	%rdx,%r11
+add	%rax,%r12
+mov	%rbp,%rax
+adc	%rdx,%r13
+add	%rax,%r14
+mov	%rbp,%rax
+adc	%rdx,%r15
+add	%rax,%rbx
+lea	(%rsi,%rsi),%rax
+adc	%rdx,%rcx
+add	%rax,%r10
+mov	%rsi,%rax
+adc	%rdx,%r11
+add	%rax,%r8
+adc	%rdx,%r9
+lea	(%rax,%rax),%rsi
+add	%rax,%r14
+mov	%rbp,%rax
+adc	%rdx,%r15
+add	%rax,%rbx
+mov	%rsi,%rax
+adc	%rdx,%rcx
+add	%rax,%r8
+adc	%rdx,%r9
+jmp	.Lreduce51
+.align	32
+.Lreduce51:
+mov	\$0x7ffffffffffff,%rbp
+mov	%r10,%rdx
+shr	\$51,%r10
+shl	\$13,%r11
+add	%r11,%r12
+mov	%rbx,%rax
+shr	\$51,%rbx
+shl	\$13,%rcx
+adc	\$0,%r9
+mov	%r12,%rbx
+shr	\$51,%r12
+shl	\$13,%r13
+adc	\$0,%r15
+mov	%r8,%rcx
+shr	\$51,%r8
+shl	\$13,%r9
+or	%r8,%r9
+mov	%r14,%r10
+shr	\$51,%r14
+shl	\$13,%r15
+lea	(%r15,%r15,8),%r14
+lea	(%r15,%r14,2),%r15
+mov	%rdx,%r8
+shr	\$51,%r8
+mov	%rax,%r9
+shr	\$51,%r9
+mov	%rcx,8*1(%rdi)
+mov	%rdx,8*2(%rdi)
+mov	%rbx,8*3(%rdi)
+mov	%r10,8*4(%rdi)
+mov	8*5(%rsp),%r15
+.cfi_restore	%r15
+mov	8*6(%rsp),%r14
+.cfi_restore	%r14
+mov	8*7(%rsp),%r13
+.cfi_restore	%r13
+mov	8*8(%rsp),%r12
+.cfi_restore	%r12
+mov	8*9(%rsp),%rbx
+.cfi_restore	%rbx
+mov	8*10(%rsp),%rbp
+.cfi_restore	%rbp
+lea	8*11(%rsp),%rsp
+.cfi_adjust_cfa_offset	88
+.Lfe51_sqr_epilogue:
+ret
+.cfi_endproc
+.size	x25519_fe51_sqr,.-x25519_fe51_sqr
+.globl	x25519_fe51_mul121666
+.type	x25519_fe51_mul121666,\@function,2
+.align	32
+x25519_fe51_mul121666:
+.cfi_startproc
+push	%rbp
+.cfi_push	%rbp
+push	%rbx
+.cfi_push	%rbx
+push	%r12
+.cfi_push	%r12
+push	%r13
+.cfi_push	%r13
+push	%r14
+.cfi_push	%r14
+push	%r15
+.cfi_push	%r15
+lea	-8*5(%rsp),%rsp
+.cfi_adjust_cfa_offset	40
+.Lfe51_mul121666_body:
+mov	\$121666,%eax
+mulq	8*0(%rsi)
+mov	\$121666,%eax
+mov	%rdx,%rcx
+mulq	8*1(%rsi)
+mov	\$121666,%eax
+mov	%rdx,%r9
+mulq	8*2(%rsi)
+mov	\$121666,%eax
+mov	%rdx,%r11
+mulq	8*3(%rsi)
+mov	%rdx,%r13
+mulq	8*4(%rsi)
+mov	%rdx,%r15
+jmp	.Lreduce51
+.Lfe51_mul121666_epilogue:
+.cfi_endproc
+.size	x25519_fe51_mul121666,.-x25519_fe51_mul121666
+___
+if ($addx) {
+my ($acc0,$acc1,$acc2,$acc3,$acc4,$acc5,$acc6,$acc7) : map("%r$_",(8..15));
+$code.=<<___;
+.extern	OPENSSL_ia32cap_P
+.globl	x25519_fe64_eligible
+.type	x25519_fe64_eligible,\@abi-omnipotent
+.align	32
+x25519_fe64_eligible:
+.cfi_startproc
+mov	OPENSSL_ia32cap_P+8(%rip),%ecx
+xor	%eax,%eax
+and	\$0x80100,%ecx
+cmp	\$0x80100,%ecx
+cmove	%ecx,%eax
+ret
+.cfi_endproc
+.size	x25519_fe64_eligible,.-x25519_fe64_eligible
+.globl	x25519_fe64_mul
+.type	x25519_fe64_mul,\@function,3
+.align	32
+x25519_fe64_mul:
+.cfi_startproc
+push	%rbp
+.cfi_push	%rbp
+push	%rbx
+.cfi_push	%rbx
+push	%r12
+.cfi_push	%r12
+push	%r13
+.cfi_push	%r13
+push	%r14
+.cfi_push	%r14
+push	%r15
+.cfi_push	%r15
+.cfi_push	%rdi
+lea	-8*2(%rsp),%rsp
+.cfi_adjust_cfa_offset	16
+.Lfe64_mul_body:
+mov	%rdx,%rax
+adcx	%rax,$acc1
+adcx	%rbx,$acc2
+adcx	%rax,$acc3
+adox	%rax,$acc1
+adcx	%rbx,$acc2
+adox	%rax,$acc2
+adcx	%rbx,$acc3
+adox	%rax,$acc3
+adcx	%rbx,$acc4
+adox	%rax,$acc4
+adcx	%rax,$acc2
+adox	%rbx,$acc3
+adcx	%rax,$acc3
+adox	%rbx,$acc4
+adcx	%rax,$acc4
+adox	%rbx,$acc5
+adcx	%rax,$acc5
+adox	%rax,$acc3
+adcx	%rbx,$acc4
+adox	%rax,$acc4
+adcx	%rbx,$acc5
+adox	%rax,$acc5
+adcx	%rbx,$acc6
+mov	\$38,%edx
+adox	%rax,$acc6
+jmp	.Lreduce64
+.Lfe64_mul_epilogue:
+.cfi_endproc
+.size	x25519_fe64_mul,.-x25519_fe64_mul
+.globl	x25519_fe64_sqr
+.type	x25519_fe64_sqr,\@function,2
+.align	32
+x25519_fe64_sqr:
+.cfi_startproc
+push	%rbp
+.cfi_push	%rbp
+push	%rbx
+.cfi_push	%rbx
+push	%r12
+.cfi_push	%r12
+push	%r13
+.cfi_push	%r13
+push	%r14
+.cfi_push	%r14
+push	%r15
+.cfi_push	%r15
+.cfi_push	%rdi
+lea	-8*2(%rsp),%rsp
+.cfi_adjust_cfa_offset	16
+.Lfe64_sqr_body:
+adcx	%rax,$acc2
+adcx	%rbx,$acc3
+adox	%rax,$acc3
+adcx	%rbx,$acc4
+adox	%rax,$acc4
+adcx	%rdi,$acc5
+adox	%rax,$acc5
+adox	$acc7,$acc1
+adcx	$acc2,$acc2
+adcx	$acc3,$acc3
+adox	%rax,$acc2
+adcx	$acc4,$acc4
+adox	%rbx,$acc3
+adcx	$acc5,$acc5
+adox	%rax,$acc4
+adcx	$acc6,$acc6
+adox	%rbx,$acc5
+mov	\$38,%edx
+adox	%rax,$acc6
+jmp	.Lreduce64
+.align	32
+.Lreduce64:
+mulx	$acc4,%rax,%rbx
+adcx	%rax,$acc0
+adox	%rbx,$acc1
+mulx	$acc5,%rax,%rbx
+adcx	%rax,$acc1
+adox	%rbx,$acc2
+mulx	$acc6,%rax,%rbx
+adcx	%rax,$acc2
+adox	%rbx,$acc3
+mulx	$acc7,%rax,$acc4
+adcx	%rax,$acc3
+adox	%rdi,$acc4
+adcx	%rdi,$acc4
+imulq	%rdx,$acc4
+add	$acc4,$acc0
+adc	\$0,$acc1
+adc	\$0,$acc2
+adc	\$0,$acc3
+and	\$38,%rax
+add	%rax,$acc0
+mov	$acc1,8*1(%rdi)
+mov	$acc2,8*2(%rdi)
+mov	$acc3,8*3(%rdi)
+mov	$acc0,8*0(%rdi)
+mov	8*3(%rsp),%r15
+.cfi_restore	%r15
+mov	8*4(%rsp),%r14
+.cfi_restore	%r14
+mov	8*5(%rsp),%r13
+.cfi_restore	%r13
+mov	8*6(%rsp),%r12
+.cfi_restore	%r12
+mov	8*7(%rsp),%rbx
+.cfi_restore	%rbx
+mov	8*8(%rsp),%rbp
+.cfi_restore	%rbp
+lea	8*9(%rsp),%rsp
+.cfi_adjust_cfa_offset	88
+.Lfe64_sqr_epilogue:
+ret
+.cfi_endproc
+.size	x25519_fe64_sqr,.-x25519_fe64_sqr
+.globl	x25519_fe64_mul121666
+.type	x25519_fe64_mul121666,\@function,2
+.align	32
+x25519_fe64_mul121666:
+.Lfe64_mul121666_body:
+.cfi_startproc
+mov	\$121666,%edx
+mulx	8*0(%rsi),$acc0,%rcx
+mulx	8*1(%rsi),$acc1,%rax
+add	%rcx,$acc1
+mulx	8*2(%rsi),$acc2,%rcx
+adc	%rax,$acc2
+mulx	8*3(%rsi),$acc3,%rax
+adc	%rcx,$acc3
+adc	\$0,%rax
+imulq	\$38,%rax,%rax
+add	%rax,$acc0
+adc	\$0,$acc1
+adc	\$0,$acc2
+adc	\$0,$acc3
+and	\$38,%rax
+add	%rax,$acc0
+mov	$acc1,8*1(%rdi)
+mov	$acc2,8*2(%rdi)
+mov	$acc3,8*3(%rdi)
+mov	$acc0,8*0(%rdi)
+.Lfe64_mul121666_epilogue:
+ret
+.cfi_endproc
+.size	x25519_fe64_mul121666,.-x25519_fe64_mul121666
+.globl	x25519_fe64_add
+.type	x25519_fe64_add,\@function,3
+.align	32
+x25519_fe64_add:
+.Lfe64_add_body:
+.cfi_startproc
+mov	8*0(%rsi),$acc0
+mov	8*1(%rsi),$acc1
+mov	8*2(%rsi),$acc2
+mov	8*3(%rsi),$acc3
+add	8*0(%rdx),$acc0
+adc	8*1(%rdx),$acc1
+adc	8*2(%rdx),$acc2
+adc	8*3(%rdx),$acc3
+and	\$38,%rax
+add	%rax,$acc0
+adc	\$0,$acc1
+adc	\$0,$acc2
+mov	$acc1,8*1(%rdi)
+adc	\$0,$acc3
+mov	$acc2,8*2(%rdi)
+mov	$acc3,8*3(%rdi)
+and	\$38,%rax
+add	%rax,$acc0
+mov	$acc0,8*0(%rdi)
+.Lfe64_add_epilogue:
+ret
+.cfi_endproc
+.size	x25519_fe64_add,.-x25519_fe64_add
+.globl	x25519_fe64_sub
+.type	x25519_fe64_sub,\@function,3
+.align	32
+x25519_fe64_sub:
+.Lfe64_sub_body:
+.cfi_startproc
+mov	8*0(%rsi),$acc0
+mov	8*1(%rsi),$acc1
+mov	8*2(%rsi),$acc2
+mov	8*3(%rsi),$acc3
+sub	8*0(%rdx),$acc0
+sbb	8*1(%rdx),$acc1
+sbb	8*2(%rdx),$acc2
+sbb	8*3(%rdx),$acc3
+and	\$38,%rax
+sub	%rax,$acc0
+sbb	\$0,$acc1
+sbb	\$0,$acc2
+mov	$acc1,8*1(%rdi)
+sbb	\$0,$acc3
+mov	$acc2,8*2(%rdi)
+mov	$acc3,8*3(%rdi)
+and	\$38,%rax
+sub	%rax,$acc0
+mov	$acc0,8*0(%rdi)
+.Lfe64_sub_epilogue:
+ret
+.cfi_endproc
+.size	x25519_fe64_sub,.-x25519_fe64_sub
+.globl	x25519_fe64_tobytes
+.type	x25519_fe64_tobytes,\@function,2
+.align	32
+x25519_fe64_tobytes:
+.Lfe64_to_body:
+.cfi_startproc
+mov	8*0(%rsi),$acc0
+mov	8*1(%rsi),$acc1
+mov	8*2(%rsi),$acc2
+mov	8*3(%rsi),$acc3
+lea	($acc3,$acc3),%rax
+and	\$19,$acc3
+add	$acc3,$acc0
+adc	\$0,$acc1
+adc	\$0,$acc2
+adc	\$0,%rax
+lea	(%rax,%rax),$acc3
+not	%rax
+and	\$19,%rax
+sub	%rax,$acc0
+sbb	\$0,$acc1
+sbb	\$0,$acc2
+sbb	\$0,$acc3
+mov	$acc0,8*0(%rdi)
+mov	$acc1,8*1(%rdi)
+mov	$acc2,8*2(%rdi)
+mov	$acc3,8*3(%rdi)
+.Lfe64_to_epilogue:
+ret
+.cfi_endproc
+.size	x25519_fe64_tobytes,.-x25519_fe64_tobytes
+___
+} else {
+$code.=<<___;
+.globl	x25519_fe64_eligible
+.type	x25519_fe64_eligible,\@abi-omnipotent
+.align	32
+x25519_fe64_eligible:
+.cfi_startproc
+xor	%eax,%eax
+ret
+.cfi_endproc
+.size	x25519_fe64_eligible,.-x25519_fe64_eligible
+.globl	x25519_fe64_mul
+.type	x25519_fe64_mul,\@abi-omnipotent
+.globl	x25519_fe64_sqr
+.globl	x25519_fe64_mul121666
+.globl	x25519_fe64_add
+.globl	x25519_fe64_sub
+.globl	x25519_fe64_tobytes
+x25519_fe64_mul:
+x25519_fe64_sqr:
+x25519_fe64_mul121666:
+x25519_fe64_add:
+x25519_fe64_sub:
+x25519_fe64_tobytes:
+.cfi_startproc
+ret
+.cfi_endproc
+.size	x25519_fe64_mul,.-x25519_fe64_mul
+___
+}
+$code.=<<___;
+.asciz	"X25519 primitives for x86_64, CRYPTOGAMS by <appro\@openssl.org>"
+___
+if ($win64) {
+$rec="%rcx";
+$frame="%rdx";
+$context="%r8";
+$disp="%r9";
+$code.=<<___;
+.extern	__imp_RtlVirtualUnwind
+.type	short_handler,\@abi-omnipotent
+.align	16
+short_handler:
+push	%rsi
+push	%rdi
+push	%rbx
+push	%rbp
+push	%r12
+push	%r13
+push	%r14
+push	%r15
+pushfq
+sub	\$64,%rsp
+jb	.Lcommon_seh_tail
+jmp	.Lcommon_seh_tail
+.size	short_handler,.-short_handler
+.type	full_handler,\@abi-omnipotent
+.align	16
+full_handler:
+push	%rsi
+push	%rdi
+push	%rbx
+push	%rbp
+push	%r12
+push	%r13
+push	%r14
+push	%r15
+pushfq
+sub	\$64,%rsp
+jb	.Lcommon_seh_tail
+jae	.Lcommon_seh_tail
+lea	(%rax,%r10),%rax
+mov	-8(%rax),%rbp
+mov	-16(%rax),%rbx
+mov	-24(%rax),%r12
+mov	-32(%rax),%r13
+mov	-40(%rax),%r14
+mov	-48(%rax),%r15
+.Lcommon_seh_tail:
+mov	8(%rax),%rdi
+mov	16(%rax),%rsi
+mov	$disp,%rsi
+call	*__imp_RtlVirtualUnwind(%rip)
+add	\$64,%rsp
+popfq
+pop	%r15
+pop	%r14
+pop	%r13
+pop	%r12
+pop	%rbp
+pop	%rbx
+pop	%rdi
+pop	%rsi
+ret
+.size	full_handler,.-full_handler
+.section	.pdata
+.align	4
+.rva	.LSEH_begin_x25519_fe51_mul
+.rva	.LSEH_end_x25519_fe51_mul
+.rva	.LSEH_info_x25519_fe51_mul
+.rva	.LSEH_begin_x25519_fe51_sqr
+.rva	.LSEH_end_x25519_fe51_sqr
+.rva	.LSEH_info_x25519_fe51_sqr
+.rva	.LSEH_begin_x25519_fe51_mul121666
+.rva	.LSEH_end_x25519_fe51_mul121666
+.rva	.LSEH_info_x25519_fe51_mul121666
+___
+$code.=<<___	if ($addx);
+.rva	.LSEH_begin_x25519_fe64_mul
+.rva	.LSEH_end_x25519_fe64_mul
+.rva	.LSEH_info_x25519_fe64_mul
+.rva	.LSEH_begin_x25519_fe64_sqr
+.rva	.LSEH_end_x25519_fe64_sqr
+.rva	.LSEH_info_x25519_fe64_sqr
+.rva	.LSEH_begin_x25519_fe64_mul121666
+.rva	.LSEH_end_x25519_fe64_mul121666
+.rva	.LSEH_info_x25519_fe64_mul121666
+.rva	.LSEH_begin_x25519_fe64_add
+.rva	.LSEH_end_x25519_fe64_add
+.rva	.LSEH_info_x25519_fe64_add
+.rva	.LSEH_begin_x25519_fe64_sub
+.rva	.LSEH_end_x25519_fe64_sub
+.rva	.LSEH_info_x25519_fe64_sub
+.rva	.LSEH_begin_x25519_fe64_tobytes
+.rva	.LSEH_end_x25519_fe64_tobytes
+.rva	.LSEH_info_x25519_fe64_tobytes
+___
+$code.=<<___;
+.section	.xdata
+.align	8
+.LSEH_info_x25519_fe51_mul:
+.byte	9,0,0,0
+.rva	full_handler
+.long	88,0
+.LSEH_info_x25519_fe51_sqr:
+.byte	9,0,0,0
+.rva	full_handler
+.long	88,0
+.LSEH_info_x25519_fe51_mul121666:
+.byte	9,0,0,0
+.rva	full_handler
+.long	88,0
+___
+$code.=<<___	if ($addx);
+.LSEH_info_x25519_fe64_mul:
+.byte	9,0,0,0
+.rva	full_handler
+.long	72,0
+.LSEH_info_x25519_fe64_sqr:
+.byte	9,0,0,0
+.rva	full_handler
+.long	72,0
+.LSEH_info_x25519_fe64_mul121666:
+.byte	9,0,0,0
+.rva	short_handler
+.LSEH_info_x25519_fe64_add:
+.byte	9,0,0,0
+.rva	short_handler
+.LSEH_info_x25519_fe64_sub:
+.byte	9,0,0,0
+.rva	short_handler
+.LSEH_info_x25519_fe64_tobytes:
+.byte	9,0,0,0
+.rva	short_handler
+___
+}
+$code =~ s/\`([^\`]*)\`/eval $1/gem;
+print $code;
+close STDOUT or die "error closing STDOUT: $!";

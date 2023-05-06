@@ -1,0 +1,10 @@
+BEGIN{
+if ($ENV{HARNESS_ACTIVE}) {
+exit 0;
+}
+}
+my $X = $^X =~ m/\s/ ? qq{"$^X"} : $^X;
+system(qq{
+$X -Mblib
+eval { die "foo" }; warn "ok 3 - wazzup \$\@\n" if \$\@;'
+});

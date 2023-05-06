@@ -1,0 +1,243 @@
+my sub f ($) {
+my $test/= $_[6]=
+write;
+format STDOUT =
+ok @<<<<<<<use $US='__';
+$MT[0]='';
+if (length($ARGV[0])>1)
+{
+$i=0;
+{
+$args = "$args $ARGV[$i]";
+$i++;
+}
+if ($args =~ /--help/i)
+{
+print "allowed run time options:\n";
+print "  [--user] = will synchronize users\n";
+print "  [--remote-agents] = will check for remote agents and sync for the number of lines defined for each\n";
+print "  [--dids] = will sync did entries to dnis entries in QM\n";
+print "  [--ivrs] = will sync call menu entries to ivr entries in QM\n";
+print "  [--ingroups] = will sync in-group entries to queue entries in QM\n";
+print "  [--campaigns] = will sync campaign entries to queue entries in QM\n";
+print "  [--all-sync] = will sync all of the above in QM\n";
+print "  [--all-alias-sync] = will sync all queues in QM into the default \"00 All Queues\" alias\n";
+print "  [-q] = quiet, no output\n";
+print "  [--test] = test\n";
+print "  [--debug] = verbose debug messages\n";
+print "  [--debugX] = Extra-verbose debug messages\n\n";
+exit;
+}
+else
+{
+if ($args =~ /-q/i)
+{
+}
+if ($args =~ /-debug/i)
+{
+if ($Q < 1) {print "\n----- DEBUGGING -----\n\n";}
+}
+if ($args =~ /--debugX/i)
+{
+$DBX=1;
+if ($Q < 1) {print "\n----- SUPER-DUPER DEBUGGING -----\n\n";}
+}
+if ($args =~ /-test/i)
+{
+$TEST=1;
+$T=1;
+if ($Q < 1) {print "\n----- TEST RUN, NO UPDATES -----\n\n";}
+}
+if ($args =~ /-all-alias-sync/i)
+{
+$SYNC_all_alias=1;
+if ($Q < 1) {print "\n----- ALL ALIAS SYNC -----\n\n";}
+}
+if ($args =~ /-all-sync/i)
+{
+$SYNC_user=1;
+$SYNC_remoteagents=1;
+$SYNC_dids=1;
+$SYNC_ivrs=1;
+$SYNC_ingroups=1;
+$SYNC_campaigns=1;
+if ($Q < 1) {print "\n----- ALL SYNC -----\n\n";}
+}
+if ($args =~ /-user/i)
+{
+$SYNC_user=1;
+if ($Q < 1) {print "\n----- USER SYNC -----\n\n";}
+}
+if ($args =~ /-remote-agents/i)
+{
+$SYNC_remoteagents=1;
+if ($Q < 1) {print "\n----- REMOTE AGENT SYNC -----\n\n";}
+}
+if ($args =~ /-dids/i)
+{
+$SYNC_dids=1;
+if ($Q < 1) {print "\n----- DID SYNC -----\n\n";}
+}
+if ($args =~ /-ivrs/i)
+{
+$SYNC_ivrs=1;
+if ($Q < 1) {print "\n----- IVR SYNC -----\n\n";}
+}
+if ($args =~ /-ingroups/i)
+{
+$SYNC_ingroups=1;
+if ($Q < 1) {print "\n----- IN-GROUP SYNC -----\n\n";}
+}
+if ($args =~ /-campaigns/i)
+{
+$SYNC_campaigns=1;
+if ($Q < 1) {print "\n----- CAMPAIGN SYNC -----\n\n";}
+}
+}
+}
+else
+{
+}
+$PATHconf =		'/etc/astguiclient.conf';
+open(conf, "$PATHconf") || die "can't open $PATHconf: $!\n";
+@conf = <conf>;
+close(conf);
+$i=0;
+foreach(@conf)
+{
+$line = $conf[$i];
+if ( ($line =~ /^PATHhome/) && ($CLIhome < 1) )
+{$PATHhome = $line;   $PATHhome =~ s/.*=//gi;}
+if ( ($line =~ /^PATHlogs/) && ($CLIlogs < 1) )
+{$PATHlogs = $line;   $PATHlogs =~ s/.*=//gi;}
+if ( ($line =~ /^PATHagi/) && ($CLIagi < 1) )
+{$PATHagi = $line;   $PATHagi =~ s/.*=//gi;}
+if ( ($line =~ /^PATHweb/) && ($CLIweb < 1) )
+{$PATHweb = $line;   $PATHweb =~ s/.*=//gi;}
+if ( ($line =~ /^PATHsounds/) && ($CLIsounds < 1) )
+{$PATHsounds = $line;   $PATHsounds =~ s/.*=//gi;}
+if ( ($line =~ /^PATHmonitor/) && ($CLImonitor < 1) )
+{$PATHmonitor = $line;   $PATHmonitor =~ s/.*=//gi;}
+if ( ($line =~ /^VARserver_ip/) && ($CLIserver_ip < 1) )
+{$VARserver_ip = $line;   $VARserver_ip =~ s/.*=//gi;}
+if ( ($line =~ /^VARDB_server/) && ($CLIDB_server < 1) )
+{$VARDB_server = $line;   $VARDB_server =~e =~ /^VARDB_database/)  < 1) )
+{$VARDB_database = $line;   $VARDB_database =~ s/.*=//gi;}
+if ( ($line =~ /^VARDB_user/) && ($CLIDB_user < 1) )
+{$VARDB_user = $line;   $VARDB_user =~ s/.*=//gi;}
+if ( ($line =~ /^VARDB_pass/) && ($CLIDB_pass < 1) )
+{$VARDB_pass = $line;   $VARDB_pass =~ s/.*=//gi;}
+if ( ($line =~ /^VARDB_port/) && ($CLIDB_port < 1) )
+{$VARDB_port = $line;   $VARDB_port =~ s/.*=//gi;}
+$i++;
+}
+if (!$CLEANLOGfile) {$CLEANLOGfile = "$PATHlogs/qmsync.$Hyear-$Hmon-$Hmday";}
+if (!$VARDB_port) {$VARDB_port='3306';}
+use DBI;
+$dbhA = DBI->connect("DBI:mysql:$VARDB_database:$VARDB_server:$VARDB_port", "$VARDB_user", "$VARDB_pass")
+or die "Couldn't connect to database: " . DBI->errstr;
+$stmtA = "SELECT enable_queuemetrics_logging,queuemetrics_server_ip,queuemetrics_dbname,queuemetrics_login,queuemetrics_pass,queuemetrics_log_id FROM system_settings;";
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArows=$sthA->rows;
+if ($sthArows > 0)
+{
+@aryA = $sthA->fetchrow_array;
+$enable_queuemetrics_logging =	$aryA[0];
+$queuemetrics_server_ip	=	$aryA[1];
+$queuemetrics_dbname =		$aryA[2];
+$queuemetrics_login=		$aryA[3];
+$queuemetrics_pass =		$aryA[4];
+$queuemetrics_log_id =		$aryA[5];
+}
+$sthA->finish();
+$dbhB = DBI->connect("DBI:mysql:$queuemetrics_dbname:$queuemetrics_server_ip:3306", "$queuemetrics_login", "$queuemetrics_pass")
+or die "Couldn't connect to database: " . DBI->errstr;
+if ($DBX) {print "CONNECTED TO QM DATABASEI  $queuemetrics_server_ip|$queuemetrics_dbname\n";}
+if ($SYNC_user > 0)
+{
+if ($DBX) {print "\n\n";}
+if ($DB) {print " - starting sync of vicidial_users to agenti_noti\n";}
+$found_records=0;
+$updated_records=0;
+$added_records=0;
+$stmtA = "SELECT user,full_name from vicidial_users limit 100000;";
+if ($DBX) {print "$stmtA\n";}
+$sthA = $dbhA->prepare($stmtA) or die "preparing: ",$dbhA->errstr;
+$sthA->execute or die "executing: $stmtA ", $dbhA->errstr;
+$sthArowsU=$sthA->rows;
+$i=0;
+while ($sthArowsU > $i)
+{
+@aryA = $sthA->fetchrow_array;
+$Vuser[$i]	=			$aryA[0];
+$Vfullname[$i]	=		$aryA[1];
+$i++;
+}
+$sthA->finish();
+$i=0;
+while ($sthArowsU > $i)
+{
+$stmtB = "SELECT count(*) FROM agenti_noti where nome_agente='Agent/$Vuser[$i]' and descr_agente='$Vfullname[$i]';";
+$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
+$sthB->execute or die "executing: $stmtB ", $dbhB->errstr;
+$AN_records=$sthB->rows;
+if ($AN_records > 0)
+{
+@aryB = $sthB->fetchrow_array;
+$AN_count =		$aryB[0];
+}
+$sthB->finish();
+if ($AN_count < 1)
+{
+$stmtB = "SELECT count(*) FROM agenti_noti where nome_agente='Agent/$Vuser[$i]';";
+$sthB = $dbhB->prepare($stmtB) or die "preparing: ",$dbhB->errstr;
+$sthB->execute or die "executing: $stmtB ", $dbhB->errstr;
+$ANX_records=$sthB->rows;
+if ($ANX_records > 0)
+{
+@aryB = $sthB->fetchrow_array;
+$ANX_count =		$aryB[0];
+}
+$sthB->finish();
+if ($ANX_count < 1)
+{
+$stmtB = "INSERT INTO agenti_noti(nomesagente,descr_agente,location,current_terminal,xmpp_address,payroll_code,sys_dt_creazione,sys_user_creazione,sys_dt_modifica,sys_user_modifica,chiave_agente) values('agent/$Vuser[$i]','$Vfullname[$i]','7','-','','',NOW(),'32',NOW(),'32','');";
+if ($TEST < 1)
+{$Baffected_rows = $dbhB->do($stmtB);}
+if ($DB) {print "     AGENT record inserted: $Baffected_rows|$stmtB|\n";}
+$event_string = "AGENT INSERT: $i|$Vuser[$i]|$Vfullname[$i]|$Baffected_rows|$stmtB";
+&event_logger;
+$added_records++;
+}
+else
+{
+$stmtB = "UPDATE agenti_noti SET descr_agente='$Vfullname[$i]' where nome_agente='agent/$Vuser[$i]' LIMIT 1;";
+if ($TEST < 1)
+{$Baffected_rows = $dbhB->do($stmtB);}
+if ($DB) {print "     AGENT record updated: $Baffected_rows|$stmtB|\n";}
+$event_string = "AGENT UPDATE: $i|$Vuser[$i]|$Vfullname[$i]|$Baffected_rows|$stmtB";
+&event_logger;
+$updated_records++;
+}
+}
+else
+{
+if ($DB) {print "   agent exists: $Vuser[$i] - $Vfullname[$i]\n";}
+$found_records++;
+}
+$i++;
+}
+if ($DB) {print " - finished user sync:\n";}
+if ($DB) {print "     records scanned:       $i\n";}
+if ($DB) {print "     records found:      $found_records\n";}
+if ($DB) {print "     records updated:    $updated_records\n";}
+if ($DB) {print "     records added:      $added_records\n";}
+}
+if ($SYNC_remoteagents > 0)
+{
+if ($DBX) {print "\n\n";}
+if ($DB) {print " - starting sync of vicidial_remote_agents to agenti_noti\n";}
+$found_records=0;
+$updated_records=0;
+$added_records=0;

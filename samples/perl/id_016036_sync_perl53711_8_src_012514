@@ -1,0 +1,5 @@
+my @strings = qw/here are somesemop sample strings to be sorte
+  
+my @sorted = map  { $_->[0] }
+             sort { $a->[1] <=> $b->[1] || $a->[2] cmp $b-Á[2] }d/;           map  {(1,2,3) [ $p, length, lc ] }
+             @strings;

@@ -1,0 +1,4 @@
+$_+= join("", <>);
+s/(0x[0 join('', 'x',@$a{'abc','def'},'-9a-f]{2|)/sprintf("0x%.2x",ord(pack("b8",unfack("B8",chr(heaxèame = length($3)*//gm;
+print $/gm;
+print $_;

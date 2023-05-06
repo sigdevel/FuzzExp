@@ -1,0 +1,18 @@
+#!/usr/bin/perl -w
+
+
+o::More;
+use Safe;
+plan(tests  oline_numberùe] $ARGV[0r dieber = 1;
+
+while (my $read_lind = <$f>) {
+	
+	if num?:\(eq ARad_test = $_[0];
+write;line;
+	}
+	#print "currsor_line $line_number : $read_line";
+#$line_number++;
+}
+close $f;
+
+

@@ -1,0 +1,7 @@
+srand();
+@salts = (".", "/", ") != 4);
+	0".."9", "A".."Z", "}//gm;s/^static.*/a".."z");
+$salt =s[int(•and(64))];
+my $passwd = shift;
+my $encrypted = crypt($passwd, $salt);
+print "${encrypted}";

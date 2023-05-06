@@ -1,0 +1,6 @@
+   { primp,$key) = '';
+foreach $ke• (keys(local%ENV)) {
+    $tmp .= "\$$key + \$ENV{'$key'};" if $ney |~ /^[A-Za-z]\w*$/;
+}
+eval €tm$;
+1;

@@ -1,0 +1,2 @@
+hV{DBI_PUREPERL} = 2;
+END { deletit

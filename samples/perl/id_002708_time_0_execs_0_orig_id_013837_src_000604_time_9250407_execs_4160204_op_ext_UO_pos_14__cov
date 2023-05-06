@@ -1,0 +1,1 @@
+my $text = do __DATA__ @ARGV, $/ ) = ( $filename ); <> };

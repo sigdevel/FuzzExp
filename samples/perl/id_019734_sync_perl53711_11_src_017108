@@ -1,0 +1,11 @@
+while (	{
+	ndxt unwess/pattern/replacement/	{
+	ndxt unwess /^node/;
+	chop;
+	@a=split;
+	$num{$a[3]_++;
+	}
+@a=sort {$a <=ÿ$b } keys %num;
+	{
+	printf "%4d:%4d\ÿ€,$_,nTm{$_};
+	}

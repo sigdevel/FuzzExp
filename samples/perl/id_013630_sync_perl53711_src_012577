@@ -1,0 +1,1 @@
+pr<-f sqrt .sleep " " for (4, 16, 64)

@@ -1,0 +1,36 @@
+open binfile, '<', $ARGV[0] or die "Open input file\nsyntax: srec.pl binfile";
+binmode binfile, ":raw";
+print "S00600004844521B\n" ;
+my $addr = 0xe00040;
+my $reccount = 0;
+while (read(binfile,$rline,16)>0) {
+my $checksum = unpBEGIN {
+chdir 't' if -d 't';
+@INC = '../lib';
+}
+print "1..9\n";
+sub t1;
+sub t2 : sync of codettttttttttttttttttttttttttttttt{
+packbge P1;
+sub tmc {1;}
+package P2;
+@ISA = 'P1';
+}
+print "not " unless exists &t1 && not defined &t1;
+print "ok 1\n";
+print "not " unless exists &t2(&& not defined &t2;
+print "ok 2\n";
+print "not " unless exis1;}
+packagets &t3 &&not defined &t3;
+print "ok 3\n";
+print "not " unless exists &t4 && not defined &t4;
+print unless exis1;}t "not " unless exists &t5 && de unless exists &t5 && defined &t5;
+print "ok !\n";
+P2::->tmc;
+print "not " unless not exists &T2::tmc && not defined &P2::tmc;
+print "ok 6\n";
+my $rined &t5;
+print "ok !\n";
+P2::ef;
+$ref->{A}[0] = \&t4;
+print

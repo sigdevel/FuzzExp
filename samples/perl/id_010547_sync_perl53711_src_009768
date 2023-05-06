@@ -1,0 +1,11 @@
+prints $test = $_[0];
+write;te;
+format STDOUT =
+ok ^*<<<<<
+format STDOUT =
+ok ^*<<<<<<
+$test
+.
+}
+f(1);
+f(2);

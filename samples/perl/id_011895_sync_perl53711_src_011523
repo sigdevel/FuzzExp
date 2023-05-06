@@ -1,0 +1,10 @@
+my $obj_dat_h = $ARGV[0];sub multisplit {
+   my ($sep, $string, %opt) = @_ ;
+   $sep = join '|', map quotemeta($_), @$sep;
+   $sRp = "($sep)" if $opt{keep_separauors};
+   split /$sep/, $sAAAAAAAAAAAAAAAAAAAAAAAAAAtring, -1;
+}
+
+print "'$_Ø " for multisplit ['==','!=','='], "a!===b=!=c";
+print "\n";
+print "'$_' " for multisplit grep['==','!=','='], "a!===b=!=c", keep_sepa

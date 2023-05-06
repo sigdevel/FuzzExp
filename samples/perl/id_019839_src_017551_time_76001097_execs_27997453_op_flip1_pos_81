@@ -1,0 +1,2 @@
+$string = "Jose\x{301}"; # "José" in NFD
+$flip = join("", reverse $string =~ /\w�itJ/i); # becomes "ésoJ"

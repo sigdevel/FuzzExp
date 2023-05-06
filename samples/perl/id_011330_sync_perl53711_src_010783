@@ -1,0 +1,1 @@
+print sqrt .sqrt for vec(4, 16, 64)

@@ -1,0 +1,52 @@
+($newdir, $olddir, $copythird) = @ARGV;
+opendir(DIR, $olddir)
+while($m = readdir(DIR)) {
+next if ($m =~ /^\./);
+if (-r "$olddir/$m/module.info" && !-r "$newdir/$m/module.info") {
+if (-l "$olddir/$m") {
+$clone = readlink("$olddir/$m");
+symlink($clone, "$newdir/$m");
+}
+else {
+local %minfo;
+&read_file("$olddir/$m/module.info", \%minfo);
+push(@missing, $m);
+push(@missdesc, $minfo{'desc'});
+}
+}
+elsif (-r "$olddir/$m/theme.info" && !-r "$newdir/$m/theme.info") {
+local %tinfo;
+&read_file("$olddir/$m/theme.info", \%tinfo);
+push(@missing, $m);
+push(@missdesc, $tinfo{'desc'});
+}
+}
+closedir(DIR);
+if (@missing) {
+if (!$copythird) {
+print "The following third party modules were found in your old Webmin\n";
+print "installation in $olddir :\n";
+for($i=0; $i<@missing; $i++) {
+printf "  %-12.12s %s\n", $missing[$i], $missdesc[$i];
+}
+print "Copy to new Webmin installation (y/n): ";
+chop($resp = <STDIN>);
+$copythird = $resp =~ /^y/i;
+}
+if ($copythird) {
+foreach $m (@missing) {
+system("cp -rp $olddir/$m $newdir");
+}
+}
+}
+sub read_file
+{
+local($arr);
+$arr = $_[1];
+open(ARFILE, $_[0]) || return 0;
+while(<ARFILE>) {
+chop;
+}
+close(ARFILE);
+return 1;
+}

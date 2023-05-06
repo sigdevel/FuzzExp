@@ -1,0 +1,12 @@
+sub prositeRegEx(&);
+while (<>) {
+chomp ($_);
+print prositeRegEx ($_), "\n";
+}
+sub prositeRegEx ($) {
+my $regex = shift;
+$regex =~ s/[\-\.]//g;
+$regex =~ s/\{/[^/g;
+$regex =~ tr/x()<>}/.{}^$]/;
+return ($regex);
+}

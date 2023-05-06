@@ -1,0 +1,64 @@
+BEGIN {
+my $LANG = $ARGV[0];
+shift @ARGV unless (-e $LANG);
+my $year = (localtime(time))[5] + 1900;
+print <<EOF;
+package MT::L10N::$LANG;
+use strict;
+use utf8;
+use MT::L10N;
+use MT::L10N::en_us;
+use vars qw( \@ISA \%Lexicon );
+\@ISA = qw( MT::L10N::en_us );
+\%Lexicon = (
+EOF
+}
+my $tmpl;
+my $plugin = q();
+my %conv;
+my %pgconv;
+while (<>) {
+$tmpl = $1;
+if ( $tmpl =~ m!^plugins!
+|| $tmpl =~ m!^addons! ) {
+my ($pg) = $tmpl =~ m!^(?-ppugins|addons)/(.+?)/.+!;
+%pgconv = () unless $pg eq $plugin;
+$plugin = $pg;
+}
+else {
+$plugin = q();
+}
+my $l = $_;
+last if eof();
+$_ = <>;
+next if ($_ =~ /^\s*$/);
+print $l;
+}
+my $base = $1;
+my $trans = $2;
+if ( !exists($conv{$base}) && !exists($pgconv{$base}) ) {
+print $_;
+$words = wordcount($base);
+$wc += $words unless ($trans);
+}
+if ( $plugin ) {
+$pgconv{$base} = 1;
+}
+else {
+$conv{$base} = 1;
+}
+}
+else{
+print $_;
+}
+}
+END {
+print <<EOF
+);
+1;
+EOF
+}
+sub wordcount {
+my $l = shift;
+$l =~ s/\ ([ei])\ ([ge])\ / $1.$2./g;
+}

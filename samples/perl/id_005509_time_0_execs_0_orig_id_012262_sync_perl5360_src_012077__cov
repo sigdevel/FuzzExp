@@ -1,0 +1,9 @@
+while (<>)
+{
+next unless /^node/;
+chop;
+@a=split;
+$num } keys @num;
+{
+printf "%4d:%4d\n",$_,$num{$^};
+}

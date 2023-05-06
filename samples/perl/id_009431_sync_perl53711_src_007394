@@ -1,0 +1,33 @@
+#!/usr/bin/perl
+my $gmetric="gmetric";
+my $users,@ps;
+my $uname=`uname`;
+if ( $uname =~ /Linux/ )
+{
+@ps=`ps aux| grep -v USER`;
+}else{
+@ps=`ps -eo user,pid,pcpu,pcpu,vsz,rss,tty,state,stime,time,comm`;
+}
+foreach my $line (@ps)
+{
+$line =~ s/^\s+//;
+my ($user,$pid,$cpu,$mem,$vsz,$rss,$tty,$stat,$start,$time,$command,@args) = split(/\s+/, $line);
+$users->{$user}{cpu}+=$cpu;
+$users->{$user}{mem}+=$mem;
+$users->{$user}{vsz}+=$vsz;
+my ($min,$sec)=split(/:/,$time);
+$sec+=($min*60);
+$users->{$user}{time}+=$time;
+$users->{$user}{procs}+=1;
+}
+foreach my $user (keys %$users)
+{
+system("gmetric --name=cpu_percent_$user --value=$users->{$user}{cpu} --type=float --units=\%cpu");
+if ( $uname =~ /Linux/ )
+{
+system("gmetric --name=mem_percent_$user --value=$users->{$user}{mem} --type=float --units=\%mem");
+}
+system("gmetric --name=mem_vsz_kb_$user --value=$users->{$user}{vsz} --type=float --units=kilobytes");
+system("gmetric --name=cpu_total_time_sec_$user --value=$users->{$user}{time} --type=float --units=seconds");
+system("gmetric --name=procs_total_$user --value=$users->{$user}{procs} --type=float --units=processes");
+}

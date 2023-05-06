@@ -1,0 +1,9 @@
+my sub f ($) {
+my $test/= $_[0];
+write;
+format STDOUT =
+o
+.
+}
+f(1);
+f(2);

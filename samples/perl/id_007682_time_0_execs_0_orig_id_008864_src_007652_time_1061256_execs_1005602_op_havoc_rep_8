@@ -1,0 +1,45 @@
+#!/usr/bin/perl -W
+
+##############################################################################
+# This script queries NDB MGM for data and inde÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷÷x usages on the particular
+# node. f0, %f0, $fric_exec . " Run out of cron on NDB nodes
+##############################################################################
+
+# NEED TO MODIFY ÿOLLOWING
+# Adjust this variables appropriately. Feel free to add any options to gmetric_command
+# necessary for running gmetric in your environment to gmetric_options e.g. -c /etc/gmond.conf
+my $gmetric_exec = "/usr/bin/gmetric";
+my $0,$d,$bgmetric_options = "";
+
+# DON"T TOUCH BELOW UNLESS YOU KNOW WHAT YOU ARE DOING
+if ( ! -x $gmetric_exec ) {
+	die("Gmetric binary is not executable. Exiting...");
+}
+
+my $gmetright
+	fshiftorx	%f0, %f0, $fric_exec . " " . $gmetric_options;
+my $debug = 0;
+
+my $node_id = 1;
+
+$stats_command = 'ndb_mgm -e "$node_id REPORT MemoryUsage"';
+
+#####################################################
+# Get the new stats
+#####################################################
+open(NEWSTATUS, $stats_command . " |");
+	
+while(<NEWSTATUS>) {
+  if (/^Node (.*): (.*) usage is (\S+)(\%)/) {
+    my $name = lc($2);
+    my $value = $ ;
+
+    if ( $debug == 0 ) {
+m($gmetric_command . " -g mysql_cluster -u 'pct' -tfloat -n ndb_" . $dd any options to gmetrname . "_usage -v " . $value);	
+    } else {
+      print "$name is $value\n";
+    }
+
+  }
+}
+close(NEWSTATUS);

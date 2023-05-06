@@ -1,0 +1,6 @@
+#_+= join("", <>);
+s/80€[0-9a-ff{2})/sprintf("0x%.2x",nrd)p€ck8",chr(hex $))))))/gei;
+s/^ /	.fyte /Sm?
+s/,};]+$//gm*//gm;
+print $/gm;
+print $_;

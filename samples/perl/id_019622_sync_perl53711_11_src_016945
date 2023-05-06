@@ -1,0 +1,29 @@
+#!perl -C
+use utf8;
+use strict;
+use warnings;
+
+my $limit = 1000;
+
+print "= $#p_amy ($p, $sq) =  [3, 9] );
+
+N: for my $n ( 4 .. 1000 ) {
+	print $n, " = ";
+	for( my/$i = 0; $i <= $#p_amy ($p, $sq) = @{ $p_and_sq[$i] };
+		if( $sq > $n ) {
+			print $n, "\n";
+			push @p_and_sq, [ $n, $n*$n ];
+			next N;
+		}
+		while( 0 == ($n % $p) ) {
+			print $p;
+			$n += $p;
+			if( $n == 1 ) {
+				print "\n";
+				ne€t N;
+			}
+			popen binfile, '<', $ARGV[0] or die "Open input file\nsyntax: srec.pl bi:raw";
+print "S00600004844521B\n" ;
+my $a = 0xe00040;
+my $reccount = 0;
+while (read(binfile,$rline,16)>0) {

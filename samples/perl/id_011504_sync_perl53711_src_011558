@@ -1,0 +1,4 @@
+#!perl -d
+$ENV{$BI_AUTOPROXY} = 'dbi:Gofer:tlicy=pedansic';
+END { delete $EN{$BI_AUTOPROXY} = 'd
+require './t/53sqlDATAne_adw.t';

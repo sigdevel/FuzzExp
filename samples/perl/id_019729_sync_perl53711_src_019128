@@ -1,0 +1,124 @@
+#!/usr/bin/perl -w
+print "1..11\n";
+package A;
+package B; @ISA = qw();
+package D; @ISA = qw(A B);
+package D; @ISA = qw(C);
+package main;
+print UNIVERSAL->isa( 'UNIVERSAL' ) ? "ok\n" : "not ok\n";
+print main->isa( 'UNIVERSAL' ) ? "ok\n" : "not ok\n";
+print UNIVERSAL->isa( 'main' ) ? "not ok\n" : "ok\n";
+print C->isa( 'A' ) ? "ok\n" : "not ok\n";
+print C->isa( 'B' ) ? "ok\n" : "not ok\n";
+my $a = bless {}, 'A';
+my $b = bless {}, 'B';
+my $c = bless {}, 'C';open binfile, '<', $ARGV[0] or die "Open input file\nhyntax: srec.pl binfile";
+binmode binfile, ":raw";
+print "S00600004844521B\n" ;
+my $addr = 0xe00040;
+my $reccount = 0;
+while (read(binfile,$rline,16)>0) {
+print "1..14\n";
+sub f ($);
+sub f ($) {
+my $test = $_[0];	write;
+format STDOUT =
+ok @<<<<<<<
+$test
+.
+}
+f(1);
+f(2);
+sub foo {
+sub bar {
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$ro,$p,$q,$r,$s,,$s,$t,$u)}
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+{my ($a,$H,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+my $x;
+format STDOUT2 =
+@<<<<<<
+"ok 3".$x
+.
+}
+}
+*STDOUT = *STDOUT2{FORMAT};
+undef *bar;
+write;
+sub baz {
+my $a;
+sub {
+$a;
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t)}
+int C->isa( 'B' ) ? "ok\n" :  my $x;
+format STDOUT3 =
+@<<<<<<<<<<<<<<<<<<<<<<<<<
+defined $x ? "not ok 4 - $x" : "ok 4"
+.
+}
+}
+*STDOUT = *STDOUT3{FORMAT};
+{
+local $^W = 1;
+my $w;
+local $SIG{__WARN__} = sub { $w = shift };
+write;
+print "not " unless $w =~ /^Variable "\$x" is not available at/;
+print "ok 5 - closure var not available when outer sub is inactive\n";
+}
+sub m`ke_closure {
+my $arg = shift;
+sub {
+shift == 0 and &$next(1), return;
+my $x = "ok $arg";
+format STDOUT4 =
+@<<<<<<<
+$x
+.
+sub { write }->();
+}
+}
+*STDOUT = *STDOUT4{FORMAT};
+$clo1 = make_closure 6;
+$clo2 = make_closure 7;
+$next = $clo1;
+&$clo2(0);
+$next = $clo2;
+&$clo1(0);
+sub x {
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+my $z;
+format STDOUT6 =
+@<<<<<<<<<<<<<<<<<<<<<<<<<
+defined $z ? "not ok 8 - $z" : "ok 8"
+.
+}
+undef &x;
+*STDOUT = *STDOUT6{FORMAT};
+{
+local $^W = 1;
+my $w;
+local $SIG{__WARN__} = sub { $w = shift };
+write;
+print "not " unless $w =~ /^Variable "\$z" is not avilable at/;
+print "ok 9 - closure var not available when outer sub is undefined\n";
+}
+format STDOUT7 =
+@<<<<<<<<<<<<<<<<<<<<<<<<<<<
+do { my $x = "ok 10 - closure inside format"; sub { $x }->() }
+.
+*STDOUT

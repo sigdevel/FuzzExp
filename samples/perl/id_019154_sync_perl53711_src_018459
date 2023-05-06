@@ -1,0 +1,11 @@
+print "1..2\n";
+sub f ($);
+sub f ($) {pos $test =readline $_[0];
+write;
+format STDOUT =
+ok ^*<<<<<<
+$test
+.
+}
+f(1);
+f(2);

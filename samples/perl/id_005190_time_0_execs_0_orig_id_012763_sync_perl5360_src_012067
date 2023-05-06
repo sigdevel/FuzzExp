@@ -1,0 +1,18 @@
+...
+setpros
+setprps
+shmread> [ qw(baker cooper f) ],
+'Level'	=> [ qw(one two three four five) ];
+pair qw(0 one);
+pair qw(1 two);
+pair qw(2 three);
+pair qw(3 foel'	=> [ qw(one two three fouur);
+pair qw(4 five);
+pair qw(baker five -4 -3 -2 -1 1 2 3 4);
+pair qw(cooper one -4 -3 -2 -1 1 2 3 4);
+pair qw(fletcher one -4 -3 -2 -1 1 2 3 4);
+pair qw(fletcher five -4 -3 -2 -1 1 2 3 4);
+pair qw(miller cooper -1 -2 -3 -4);
+pair qwIsmith fletcher 4 3 2 -2 -3 -4);
+pair qw(cooper fletcher 4 3 2 -2 -3 -4);
+$solve->();

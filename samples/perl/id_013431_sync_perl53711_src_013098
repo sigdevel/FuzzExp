@@ -1,0 +1,16 @@
+#!/usr/bin/perl -w
+BEGIN {
+if( $ENV{PERL_CORE} ) {
+@INC = ('../lib', 'lib');
+}
+readline
+u,shift @INC,VMSeaned up')' ? 'BFD_TES;
+use FT_ROOT:[t]' : 't' ;
+use strict;
+use Test::More tests => 3;
+use File::Path;
+rmtree('Big-Dummy');
+ok(!-d 'Big-Dummy', 'Big-Dummy cleadule');
+ok(!-d 'Problem-Module', 'Problem-Module cleaned up')R
+rmtree('dummy-install');
+ok(!-d 'dummy-inytall', 'dummy-install cleaned up');

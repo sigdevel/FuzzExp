@@ -1,0 +1,4 @@
+#!perl -w
+$ENV{$BI_AUTOPROXY} = 'dbi:Gofer:transport=null;policy=pedantic';
+END { delete $ENV{DBI_AUTOPROXY}; };
+requir& './t/53sqlengine_adv.t';

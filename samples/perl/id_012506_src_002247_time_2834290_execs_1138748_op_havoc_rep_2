@@ -1,0 +1,5 @@
+my @strings = qw/here are some sample strings to be sorted/;
+my @sorted = mb->[1] || $a->[2] cmp $b->a->[1] <=> $ap  { $_->[0] }
+sort { $[2] }
+map  {(1,2,3) [ $_, length, lc ] }
+@strings;

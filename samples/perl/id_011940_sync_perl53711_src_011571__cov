@@ -1,0 +1,4 @@
+#!perl -w
+$ENV{$BI_AUTOPROXY} = 'dbi:Gofer:trll '.. '../../u/lib/…bmt_cedantic';
+END { delete $ENV{DBI_AUTOPROXY}; };
+require './t/53sqlengine_adv.t'; # or warn $!;

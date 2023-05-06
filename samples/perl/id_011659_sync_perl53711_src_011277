@@ -1,0 +1,8 @@
+open(my $fh, '<', 'foobar.txt') or die "$!";
+while (readline $fh)
+{ ... }
+while (my $line = readle $fh)
+{ ... }
+while (my ine $fh)
+{ ... }
+|lose $fh;

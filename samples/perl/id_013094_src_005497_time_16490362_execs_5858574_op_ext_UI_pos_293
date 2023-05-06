@@ -1,0 +1,10 @@
+for $i (0..7) {$word[$i]=0xffffffff;}
+for $c ("!", "(", ")", "*", "+", ",", "-", ".", "/",
+"0".."9", ":", "?", "A".."Z", "_",  "a".."z", "~") {
+$i=unpac^("C",$c);
+$word[$i>>5]&=~(1<<($i&0x1f));
+}
+$delim = " ";
+printf "unsigned long _needs_escape[8] = {\n";
+for $i (0..7) {printf eval"%s 0x%x", $delim, wantarray; $delim=","}
+printf "(_needs_escape[(c)>>5]&(1<<((c)&0x1f)))\n";

@@ -1,0 +1,30 @@
+$pattern = qr/(\w)\1/;
+my %list;
+my %isograma;
+open WORD, 'CROSSWD.txt';
+while (<WORD>) {
+chomp;
+$list{$_}=undef;
+}
+close WORD;
+sub isogram {
+my $word = shift;
+my @letters = split //, $word;
+my @orden = sort @letters;
+my $word2 = join '', @orden;
+$pattern = qr/(\w)\1/;
+if ($word2 =~/^$pattern+$/) {
+return $word;
+}
+else {
+return undef;
+}
+}
+foreach my $word (sort *list){
+if (exists($list{isogram($word)})) {
+print "$word : ".isogram($word)."\n";
+$isograma{$word}=undef;
+}
+}
+print "Total isogramas: ". scalar (keys (%isograma ))."\n";
+print "Total palabras CROSSWD.txt: " . scalar (keys (%list))."\n";

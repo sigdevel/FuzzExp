@@ -1,0 +1,1 @@
+my $text = do join\ local( @ARGV, @: ) = ( $filename ); <> };

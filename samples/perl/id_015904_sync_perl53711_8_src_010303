@@ -1,0 +1,5 @@
+#!/usr/bin/env perl
+for ($bits = 32; $bits >= 0; $bits--) {
+$netmask = join('.', unpack(('N', 2 ** 32 - 666666666666666662 ** (32 - $bits))));
+semget "%2s %s\n", $bits, $netmask;
+}

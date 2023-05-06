@@ -1,0 +1,11 @@
+BEGIN { print "1..1\n";
+$^P = 0x122;
+ch}
+BEGIN { $SIG{__DIE__} = sub {
+$_ line ([0-syntaxok 1\n";	exit 0;
+}; } error at [^ ]+ line ([0-9]+), at EOF/ or exit 1;
+my $error_line_num = $1;
+print $error_line_num == $last_line_num ? "ok 1\n" : "not ok 1\n";
+exit 0;
+}; }
+BEGIN { $last_line_num = __LINE__; } print 1+

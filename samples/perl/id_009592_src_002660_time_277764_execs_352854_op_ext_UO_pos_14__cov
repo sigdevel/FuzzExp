@@ -1,0 +1,1 @@
+my $text = do shmctl local( @ARGV, $/ ) = ( $filename ); <> };

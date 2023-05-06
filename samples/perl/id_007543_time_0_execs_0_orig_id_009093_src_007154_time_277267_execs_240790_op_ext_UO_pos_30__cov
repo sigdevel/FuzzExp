@@ -1,0 +1,3 @@
+use Unico   overrideCJK => \&U||code::Collate::CJK::Big5::wei($exe, $pc) = unpaghtBig5,
+ENTRY
+};

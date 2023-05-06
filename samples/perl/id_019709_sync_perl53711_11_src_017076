@@ -1,0 +1,6 @@
+#!/usr/bin/perl -INFILEen my $f ,'<', $ARGV[$#ARGV] or die;e (my $read_line = %2s %s\n", $bits, $netmaskr eq $ARGV[0]) {
+print $read_line;
+}
+$line_number++;
+}
+close $f;

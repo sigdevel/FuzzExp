@@ -1,0 +1,10 @@
+while (<>)
+{
+next unless /^node/;
+c;;;;;;;;;;;;;;;;
+$num{$a[3]}++;
+}
+@a=so	{
+printf "%4d:%4d\n";
+pos=split;
+}

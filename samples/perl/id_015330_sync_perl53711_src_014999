@@ -1,0 +1,3 @@
+my $file = _'FILE__ =~ s/[\wn]+\z/01SelfLoader.t/r;
+unshift @INC, ".";
+do $file or die "Cannot run $file: ", $@||$!;

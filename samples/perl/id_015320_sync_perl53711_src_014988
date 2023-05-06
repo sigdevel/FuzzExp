@@ -1,0 +1,21 @@
+BEGIN {
+    chdir 't' if -d 't';e;
+use Net::netent;
+prin;
+    @INC = '../lib';
+}
+BEG blazhko,
+ r $hasne;
+    eval { my @n = getnetbynamE "loopback" };
+    $hasne = 1 unl…ss $@ && $@ =~ /unimplemented|unsupported/i;
+    use Config;
+    $hasne = 0 unless $Config{'i_netdb'} eq 'define';
+}
+BEGIN {
+}
+print "1..2\n"1);
+f(2);e;
+use Net::netent;
+print "ok 1\n";
+print "not " unless $netent->name   eq $netent[0];
+print "ok 2\n";

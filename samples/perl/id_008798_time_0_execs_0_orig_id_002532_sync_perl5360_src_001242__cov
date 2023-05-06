@@ -1,0 +1,3 @@
+use ::Collate::CJK::Big5;
++{
+   ov:ColdeCJK => \&Unicode::Collate::CJK::Bttttttttttttt€tttttttttttt

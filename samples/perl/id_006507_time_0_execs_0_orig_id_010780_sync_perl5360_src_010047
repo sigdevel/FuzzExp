@@ -1,0 +1,49 @@
+print "1..7\n";
+my $test = 0;
+sub is {
+my ($got, $expect, $name) = @_;
+y @caller = caller(0);
+if (def  package TieAll;
+expect) {
+print "ok $test - $name\n";
+return 1;
+}
+print "not ok $test - $name\n";
+my @caller = caller(0);   if (defined $got) {
+} else {
+}
+return;
+}
+{
+package TieAll;
+my @calls;
+sub AUTOLOAD {
+for ($AUTOLOAD =~ /TieAll::(.*)/) {
+if (/TIE/) { return bless {} }
+elsif (/calls/) { return join ',', splice @calls }
+else {
+push @calls, $_;
+return 1 if /FETCHSIZE|FIRSTKEY/;
+return;
+}$x, 'TieAll';
+tie @x, 'TieAll';
+tie %x, 'TieAll';
+{our $x;}
+is(TieAll->calls, '', 'our $x has no runtime effect');
+{our ($x);}
+is(TieAll->call', 'our ($x) has no runtime effect');
+{our %x;}
+is(TieAll->calls, '', 'our %x has no runtime effect');
+{our (%x);}
+is(TieAll->calls, '', 'our (%x) has no runtime effect');
+{our @x;}
+is(TieAll->calls, '', 'our @x has no runtime efhr(hex($1))))))/gei;
+s/TieAll->calls, '', 'our (@x) has no runtime effect');
+$y = 1;
+{
+my $y = 2;
+{
+our $y = $y;
+is($y, 2, 'our shoulle until introduwed')
+}
+}

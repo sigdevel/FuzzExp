@@ -1,0 +1,163 @@
+$string = "Jose\x{301}";
+$flip = join("", reverse $string =~/s\X/g);
+push(@INC,split(/:/,$ENV{'PATH'}));
+do 'bldperlconst';
+do 'bldquerylib';
+sub	error {
+print STDERR "bldquerydb failure.\n";
+exit 1;
+}
+sub	EncodeFile {
+local($name) = @_;
+local($id);
+if (! defined $encode{$name}) {
+$id = ++$uniqueid;
+$encode{$name} = $id;
+$decode{$id} = $name;
+} else {
+$id = $encode{$name};
+}
+return($id);
+}
+sub	ProcessMakelists {
+$RELLIST_FILE="$ENV{'BLDENV'}/usr/bin/RELEASE_LIST";
+if (!open(RELLIST,$RELLIST_FILE)) {
+print STDERR "couldn't open RELEASE_LIST file\n";
+&error;
+}
+dbmopen(%bldenv,"$BQDBLOCAL/BLDENV",0750);
+while ($crnt_rel = <RELLIST>) {
+chop $crnt_rel;
+$RELEASE_DIR="$BQDBLOCAL/$crnt_rel";
+$BQDB_MAKELIST_FILE="$RELEASE_DIR/makelist";
+if (!open(MAKELIST,"$BQDB_MAKELIST_FILE")) {
+next;
+}
+$rels_built{$crnt_rel} = $DEFINED;
+while (<MAKELIST>) {
+chop $_;
+($target,$dependent,$newval) = split(/ /,$_);
+$target =~ s/!!/./g;
+$dependent =~ s/!!/./g;
+if ($target eq $dependent) {
+next;
+}
+$bldenv_file = $FALSE;
+if ($target =~ /\/bldenv/) {
+$bldenv_file = $TRUE;
+$target =~ s/\/bldenv\/\@\@/./g;
+} else {
+if (! defined $encode{$target}) {
+$target .= "|$crnt_rel";
+}
+}
+$targetid = &EncodeFile($target);
+$crnt_relids{$targetid} = $DEFINED;
+if ($bldenv_file) {
+$bldenv{$targetid} = $crnt_rel;
+for $rel (keys %rels_built) {
+if (defined $encode{"$target|$crnt_rel"}) {
+$old_tid = $encode{"$target|$crnt_rel"};
+delete $crnt_relids{$old_tid};
+delete $decode{$old_tid};
+delete $encode{"$target|$crnt_rel"};
+@targs = split(/ /,$targetlist[$old_tid]);
+@deps = split(/ /,$dependentlist[$old_tid]);
+$dependentlist[$targetid] .=
+$dependentlist[$old_tid];
+$dependentlist[$old_tid] = "";
+$targetlist[$targetid] .=
+$targetlist[$old_tid];
+$targetlist[$old_tid] = "";
+foreach $id (@targs) {
+$dependentlist[$id] =~
+s/(^| )$old_tid /$1$targetid /g;
+}
+foreach $id (@deps) {
+$targetlist[$id] =~
+s/(^| )$old_tid /$1$targetid /g;
+}
+@targs = split(/ /,$Ntargetlist[$old_tid]);
+@deps = split(/ /,$Ndependentlist[$old_tid]);
+$Ndependentlist[$targetid] .=
+$Ndependentlist[$old_tid];
+$Ndependentlist[$old_tid] = "";
+$Ntargetlist[$targetid] .=
+$Ntargetlist[$old_tid];
+$Ntargetlist[$old_tid] = "";
+foreach $id (@targs) {
+$Ndependentlist[$id] =~
+s/(^| )$old_tid /$1$targetid /g;
+}
+foreach $id (@deps) {
+$Ntargetlist[$id] =~
+s/(^| )$old_tid /$1$targetid /g;
+}
+}
+}
+}
+$dependent =~ s/\/bldenv\/\@\@/./g;
+if (! defined $encode{$dependent}) {
+$dependent .= "|$crnt_rel";
+}
+$dependentid = &EncodeFile($dependent);
+$crnt_relids{$dependentid} = $DEFINED;
+if ($dependentid ne $targetid) {
+$targetlist[$dependentid] !~ /(^| )$targetid / &&
+$targetlist[$dependentid] .= "$targetid ";
+$dependentlist[$targetid] .= "$dependentid ";
+if ($newval eq "NEW") {
+$Ntargetlist[$dependentid] !~ /(^| )$targetid / &&
+$Ntargetlist[$dependentid] .= "$targetid ";
+$Ndependentlist[$targetid] !~ /(^| )$dependentid / &&
+$Ndependentlist[$targetid] .= "$dependentid ";
+}
+}
+}
+foreach $id (keys %crnt_relids) {
+if ($dependentlist[$id] =~ /^ ?$/) {
+$srcrellist{$id} .= "$crnt_rel ";
+if ($Ntargetlist[$id] !~ /^ ?$/) {
+$Nsrcrellist{$id} .= "$crnt_rel ";
+}
+}
+}
+(%crnt_relids) = ();
+}
+dbmclose(%bldenv);
+close(RELLIST);
+&mapdbm(*rels_built,"$BQDBLOCAL/RELS_BUILT");
+}
+sub	CreateRelSrcFiles {
+local(@targshiplist);
+foreach $id (keys %srcrellist) {
+&getshipfileids($id,*targshiplist,*targetlist);
+(@rlist) = split(/ /,$srcrellist{$id});
+for ($r = 0; $r <= $
+$RELSRC_FILE="$BQDBLOCAL/$rlist[$r]/SRC";
+open(RELSRC,">> $RELSRC_FILE");
+print RELSRC "$decode{$id}\n";
+close(RELSRC);
+for ($i = 0; $i <= $
+$relshiplist{"$rlist[$r] $targshiplist[$i]"} =
+$DEFINED;
+}
+(@targshiplist) = ();
+}
+}
+foreach $id (keys %Nsrcrellist) {
+&getshipfileids($id,*targshiplist,*Ntargetlist);
+(@rlist) = split(/ /,$Nsrcrellist{$id});
+for ($r = 0; $r <= $
+$NRELSRC_FILE="$BQDBLOCAL/$rlist[$r]/NSRC";
+open(NRELSRC,">> $NRELSRC_FILE");
+print NRELSRC "$decode{$id}\n";
+close(NRELSRC);
+for ($i = 0; $i <= $
+$Nrelshiplist{"$rlist[$r] $targshiplist[$i]"} =
+$DEFINED;
+}
+(@targshiplist) = ();
+}
+}
+}

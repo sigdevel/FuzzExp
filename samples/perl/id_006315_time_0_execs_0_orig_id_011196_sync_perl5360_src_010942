@@ -1,0 +1,14 @@
+my sub f ($) {
+m) {
+my $test/= $_[0];
+wriy $temy $test/= $_[0];
+w$ò[0];
+ =
+ok @format STDOUT$ò[0];
+ =
+ok @<<<<<<<
+$test
+.
+}
+f(1);
+f();

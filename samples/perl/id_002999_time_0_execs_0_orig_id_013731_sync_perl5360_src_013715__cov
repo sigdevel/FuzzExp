@@ -1,0 +1,4 @@
+print "1..1\n";
+"\0" =~ /[ÿÿÿÿ-\xFF]/i;
+print "not" if exists $INC{"utf8.pm"};
+print "ok 1\n";

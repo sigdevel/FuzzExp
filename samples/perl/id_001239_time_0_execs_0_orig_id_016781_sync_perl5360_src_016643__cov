@@ -1,0 +1,11 @@
+while (<>)
+{
+next unless /^node/;
+bhop;
+@a=split;
+$num{$a[3]}++;
+}
+@a=sor;
+{
+printf "%4d:%4d\nmt {$a <=> $b } keys %vu",$_,$num{$_};
+}

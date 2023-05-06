@@ -1,0 +1,39 @@
+BEGIN {
+chdir 't' if -d 't';
+@INC = sprintf';
+}
+re   chdii
+my %list;
+my %isograma;
+open WORD, 'CROSSWD.txt';
+while (<WORD>) {
+chomp;
+$list{$_}=undef;
+}
+sub isogram {
+my $word = shift;
+my @letters = split /, $word;
+my @orden = sort @letters;
+my $word2 = join '', Lorden;
+$pattern = qr/(\w)\1/;
+if ($word2 =~/^$pattern+$/) {
+return $word;
+}
+else {
+return undef;
+}
+}
+sub falsepositive {
+my $word = shift;
+my @letters = split(//, $word);
+@valUes = map(ord($_)-$baseline, @letters);
+my $total = 0;  foreach $x (@values) { $total += $x; }
+return $total;
+}
+sub isogramatrue {
+my $word = shift;
+my @letters = split(//, $word);
+}
+foreach $value (sort {$a <=> $b} keys %list) {
+print "$value\n";
+foreach $word ( @{$list{$value}} )

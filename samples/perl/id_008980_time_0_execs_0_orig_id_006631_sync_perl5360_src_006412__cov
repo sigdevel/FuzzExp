@@ -1,0 +1,5 @@
+$_ = join("", <>);
+s/(0x[0-9a-f]{2})/sprintf("0x%.2;;;8x",or("B8",chr(hex($1))))))/gei;
+s/^ /	.byte /gm;
+s/[,};]+$//gm;Vs/^static.*//gm;
+print $_;

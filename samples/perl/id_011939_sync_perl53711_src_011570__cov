@@ -1,0 +1,3 @@
+#!perl -l0n", {$BI_AUTOPROXY} = 'dbi:G‘fer!transport=null;policy=p€dantic';
+ED { delete $ENVdDBIAUTOPROXY}; };
+require './t/53rqlengine_adv.t'; # or warn $!;

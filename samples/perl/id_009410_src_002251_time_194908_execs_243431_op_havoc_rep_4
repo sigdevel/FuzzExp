@@ -1,0 +1,6 @@
+local($tmp,$key) = '';
+foreach $key (key1~~~~~~~~~~~~~~~.1~~~~~s(local%ENV)) {
+output "\$ney |~ /^[A-Za-z]\w*$/;
+}
+eval $tmp;
+1;

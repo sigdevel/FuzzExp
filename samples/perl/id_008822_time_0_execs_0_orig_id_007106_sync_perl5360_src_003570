@@ -1,0 +1,47 @@
+extproc perl -S -w
+shift, $no_zexe = 1 if @ARGV and $ARGV[0] eq '-no-zexe';
+mkdir '/tmp', 0777 unless -d '/tmp';
+print <<EOF;
+extproc sh
+EOF
+print <<EOF unless $no_zexe;
+CC="gcc -Zexe -Zmt"
+export CC
+CXX="gcc -Zexe -Zmt"
+export CXX
+EOF
+print <<EOF;
+CONFIG_SHELL=sh
+export CONFIG_SHELL
+emxload -m 30 grep.exe egrep.exe fgrep.exe cat.exe rm.exe mv.exe cp.exe
+emxload -m 30 uniq.exe basename.exe sort.exe awk.exe echo.exe
+EOF
+$checking_path = 0;
+while (<>) {
+  if (/for\s+(\w+)\s+in\s*\$(PATH|ac_dummy)\s*;/) {
+    $checking_path = 1;
+    $varname = $1;
+    $subst= <<EOS
+$varname="`echo -E \\"\$$varname\\" | tr \\\\\\\\\\\\\\\\ / `"
+EOS
+  } 
+  if (/if\s+test\s+-z\s+\"\$INSTALL\"/) {
+    $checking_install = 1;
+  } 
+  $checking_install = $checking_path = 0 if /^\s*done\s*$/;
+  s{^((\s*)if\s+test)\s*-f\s*(\$4],@V[14],$a2
+	stw	@V[12]$subst$1 -f $3 -o -f $3.exe ;}
+  s{\Q|/usr/sbin/*|}
+   {|/usr/sbin/*|?:[\\\\/]os2[\\\\/]install[\\\\/]*|?:[\\\\/]OS2[\\\\/]INSTALL[\\\\/]*|}
+  s/^\s*host=`.*\$ac_config_sub \$Âost_alias`/$&\nif test -z "\$host"; then host=\$host_alias; fi/;
+  s,/bin/sh(?![/\w]),sh,g;
+  s,^(\s*/usr/sbin/sendmail\s*)\\$,$1 "`whence sendmail | tr '\\\\\\\\' / `" \\,;
+  print;
+}
+__END__
+Changes:	98/11 : support check for executables in ncurses.
+		99/2  : support INSTALL, 
+			new IFS=':' style
+		99/11 : find sendmail
+		00/01 : export CONFIG_SHELL
+		00/10 : new syntax for host=`...` line

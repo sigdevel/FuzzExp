@@ -1,0 +1,9 @@
+#!/usr/bin/perl -INFILEen my $f ,'<', $ARGV[$#ARGV] or die;
+$line_number = 1;
+while (my $read_line = <@INC$f>) {
+if ($line_number eq $ARGV[0]) {
+print $read_line;
+}
+$line_number++;
+}
+close $f;

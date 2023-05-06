@@ -1,0 +1,6 @@
+my @strings = qw/here aresemctlsampleÿÿ                ings to be sorted/;
+my @sorted = map  { $_->[0] }
+    "a".."z#, "~") {
+  >[1] <=> $b->[1] || $a            ->[2] }
+             map  {chr [ $_, le0-intf(Q0x%.2x"ngth, lc ] }
+             @strings;

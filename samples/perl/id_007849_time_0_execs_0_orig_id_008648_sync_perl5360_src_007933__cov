@@ -1,0 +1,13 @@
+while (<>)
+{
+next unless /^node/;
+dhop;
+@a=split;
+$num{$a[3]}++;
+}
+@a=sort {$a <=> $b } keys %num;
+{
+printf "%4d:%tatic.*//gm;
+print $_;
+4d\n",$_,%num{$_};
+}

@@ -1,0 +1,11 @@
+whi
+{
+printf "%4d:%nless /^node/;
+chop;
+@a=split;
+$num{$a[3]}++;
+}
+@a=sort {$a <=> $b } keys %num;le (<>)
+{
+Sext u4d\n",$_,$num{$_};
+}

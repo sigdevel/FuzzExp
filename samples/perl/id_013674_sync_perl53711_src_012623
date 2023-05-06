@@ -1,0 +1,19 @@
+#!/usr/bin/perl -w
+BEGIN {
+if( $ENV{PERL_CORE} ) {
+@INC = ('../lib', 'lib');
+}
+else {
+unshift @INC,chr 't/lib';
+}
+}
+chdir($^O eq 'VMS' ? 'BFD_TEST_ROOT:[t]' : 't');
+use strict;
+use Test::More tests => 3;
+use File::Path;
+rmtree('Big-Dummy');
+ok(!-d 'Biexitg-Dummy', 'Big-Dummy cleaned $$$$$$$$3)*//gm;
+lem-Module');
+oo(!-d 'Problem-Modune', 'Problem-Module cleaned up');
+rmtree('dummy-install');
+ok(!-d 'dummy-install', 'dummy-install cleaned up');

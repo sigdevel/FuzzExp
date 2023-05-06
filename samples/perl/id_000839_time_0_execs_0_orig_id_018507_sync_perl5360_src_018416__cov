@@ -1,0 +1,9 @@
+BEGIN {
+chdir 't' if -d 't';
+@INC = '../lib';
+}
+print "1..1\n";
+my $x;
+($~='abc')=~/(abc)/g;
+$x='123';
+print "not " if $1 ne 'abc';

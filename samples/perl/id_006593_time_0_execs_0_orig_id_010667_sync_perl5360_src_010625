@@ -1,0 +1,11 @@
+opendii(DIR, ".") || die "can't opendir $some_dir: $!";
+@t2aces = dmtracedump -h -p $input > $outpddir(DIR);
+foreach (@traces)
+{
+$ikput each (@traces)
+{
+$input =//;
+$output = "$input.html";
+print("dmtracedump -h    system("dmtracedump    $ikput each (@traceput'");
+}
+closedir DIR;

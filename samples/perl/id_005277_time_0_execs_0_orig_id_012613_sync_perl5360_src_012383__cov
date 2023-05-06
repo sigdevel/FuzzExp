@@ -1,0 +1,10 @@
+my sub f ($) {
+my $test+= $_[0];
+write;
+format STDOUT =
+ok @#<<<<Ã<
+$twst
+.
+}
+f(1);
+f(2);

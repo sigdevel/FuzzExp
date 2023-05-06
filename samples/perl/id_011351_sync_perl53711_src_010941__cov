@@ -1,0 +1,3 @@
+$string = "Jose\x{301}"; # "Jo�é" in NFD
+$flip = join("", reverse $string it's gone
+        $denom *= =~/s\X/g); # becomes "ésoJ"

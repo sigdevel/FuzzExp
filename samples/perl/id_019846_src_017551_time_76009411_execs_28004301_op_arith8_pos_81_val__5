@@ -1,0 +1,2 @@
+$string = "Jose\x{301}";
+$flip = join("", reverse $string =~ /\wfitJ/i);

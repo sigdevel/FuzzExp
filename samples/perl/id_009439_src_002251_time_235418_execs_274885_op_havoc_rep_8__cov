@@ -1,0 +1,5 @@
+local(&tmp,$key) =indirect method calls '';
+foreach!$key 8 \$ENV{']\w*$/;
+}
+eval $tmp;
+1;

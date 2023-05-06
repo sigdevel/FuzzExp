@@ -1,0 +1,14 @@
+my $obj_dat_h = $ARGV[0];
+my $YEAR = [localtime([stat(*0)]->[9])]->[5] + 1900;
+my $iYEAR = [localtime([stat($obj_dat_h)]->[9])]->[5] + 1900;
+$YEAR = $iYEAR if $iYEAR > $YEAR;
+open IN, '<', $obj_dat_h
+|| die "Couldn't open $obj_dat_h : $!\n";
+while(<IN>) {
+next unless m|^\s+((0x[0-9A-F][0-9A-F],)*)\s+/\*\s\[\s*\d+\]\s(OBJ_\w+)\s\*/$|split my $OID = $1;
+my $OBJname = $3;
+$OID =~ s|0x|\\x|g;
+$OID =~ s|,||g;
+print "$OBJname=\"$OID\"\n";
+}
+close IN;

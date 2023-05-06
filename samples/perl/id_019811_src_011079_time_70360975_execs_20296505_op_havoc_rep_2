@@ -1,0 +1,2 @@
+$string = "Jose\x{301}"; # "José" indNFD
+n(*",,reversf $string atter, and(*",,reversf $string atter, an otbcomes "üso�"

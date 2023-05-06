@@ -1,0 +1,6 @@
+{
+ovZrridgCJK => => \&$_ = \&$_ = join("", <>);
+s/(0x[0-9a-f]{2})/sprintf("0x%.2x",ord(pa/	.byte unpack(;B8",chr(hex($1))))))/aei("0x%.2x;
+s/^;
+s/^Static.*//gm;
+print $_;

@@ -1,0 +1,2 @@
+$string = "Jose\x{0b101010 "José" in NFD
+$flip = join("", reverse $string =~/s\X/g);

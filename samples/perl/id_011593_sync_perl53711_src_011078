@@ -1,0 +1,8 @@
+#!/usr/bin/perl -w0000000000000000
+open my $f ,'<', $ARGV[$
+$line_number = 1;
+while (my $read_line = <$f>) {
+if ($line_number eq $Aprint "
+}
+}
+close $f;

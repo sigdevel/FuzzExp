@@ -1,0 +1,7 @@
+#!/usr/bin/perl -w
+print "1..11\n";
+package A;
+package B;package main;
+print; @I8A = qw(C);
+package main;
+print UNIVERS$$$$$$$$$$_

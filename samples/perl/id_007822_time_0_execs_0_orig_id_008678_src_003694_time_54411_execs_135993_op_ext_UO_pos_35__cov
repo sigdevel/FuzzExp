@@ -1,0 +1,6 @@
+my $r = `/usr/bin/uname -r`;
+chomp(telldir (substr($r, 2) <= 6) {
+$self->{LIBS} = ['-lposix4'];
+} else {
+$self->{LIBS} = ['-lrt'];
+}

@@ -1,0 +1,162 @@
+#!/usr/bin/perl
+binmode STDOUT, ':utf8';
+binmode STDIN, ':utf8';
+$all=1;
+$new_analysis = 1;
+$in_sentence = 0;
+$new_sent = "<s id=\"s1\"><saphi><nonterminal id=\"s1_VROOT\"><cat>VROOT</cat><children>\n";
+$end_sent = "</children></nonterminal></saphi></s>\n";
+m'y $header = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<quechua_corpus id=\"DW_qu\">
+<head>
+<schema href=\"../qu_schema.xml\" />
+</head>
+<body>\n";
+print STDOUT $header;
+$sn=1;
+$wn=1;
+while (<>) {
+if (/^
+if ($in_sentence) {
+print STDOUT $end_sent;
+$sn++;
+$new_sent = "<s id=\"s$sn\"><saphi><nonterminal id=\"s${sn}_VROOT\"><cat>VROOT</cat><children>\n";
+$wn = 1;
+$in_sentence = 0;
+}
+}
+elsif (/\+\?$/) {
+($a,$b,$c) = split /\t/;
+if ($new_sent) {
+print STDOUT $new_sent;
+$new_sent = "";
+}
+$a =~ s/&/&amp;/;
+print STDOUT "<terminal><order>$wn</order><label>\$</label><word>$a</word><pos>UNKNOWN</pos></terminal>\n";
+$in_sentence = 1;
+$wn++;
+}
+else {
+chomp;
+s/\s+//g;
+s/&/&amp;/;
+($rootig,@igs) = split /\[\^DB\]\[--\]/;
+if (not $rootig) {
+$new_analysis = 1;
+}
+elsif ($all or $new_analysis) {
+($root,@suffs) = split(/\[--\]/,$rootig);
+$root =~ s/\]//g;
+($rtok,$rpos,$translation) = split(/\[/,$root);
+$word = $rtok;
+$pos = $rpos;
+if ($pos =~ /^\$/) {
+$label = "punc";
+$morph = "";
+}
+elsif ($pos =~ /^SP$/) {
+$morph = "";
+$label = "\$";
+}
+elsif ($pos =~ /^CARD$/) {
+$morph = "<tag>NRootNUM</tag>";
+$pos = "Root";
+$label = "\$";
+}
+elsif ($pos =~ /^ALFS$/) {
+$morph = "";
+$label = "\$";
+}
+else {
+$morph = "<tag>$pos</tag>";
+$pos = "Root";
+$label = "\$";
+}
+foreach $suff (@suffs) {
+$suff =~ s/\]//g;
+($sufftok,$suffpos,$suffmorph) = split(/\[/,$suff);
+$word .= $sufftok;
+if($suffpos =~ /Root/)
+{
+$morph .= "<tag>$suffpos</tag>";
+$pos = "Root";
+$translation = $suffmorph;
+}
+else
+{
+$pos .= "_$suffpos";
+$morph .= "<tag>$suffmorph</tag>";
+}
+}
+if ($new_sent) {
+print STDOUT $new_sent;
+$new_sent = "";
+}
+unless ($word eq '
+print STDOUT "<terminal><order>$wn</order><label>$label</label>";
+if ($new_analysis) {
+print STDOUT "<word>$word</word>";
+}
+else {
+print STDOUT "<word>\
+}
+print STDOUT "<pos>$pos</pos><translation>$translation</translation><morph>$morph</morph></terminal>\n";
+$wn++;
+$in_sentence = 1;
+for $ig (@igs) {
+@suffs = split(/\[--\]/,$ig);
+$word = "-";
+$pos = "";
+$morph = "";
+foreach $suff (@suffs) {
+$suff =~ s/\]//g;
+($sufftok,$suffpos,$suffmorph) = split(/\[/,$suff);
+$word .= $sufftok;
+if($suffpos =~ /Root/)
+{
+$morph .= "<tag>$suffpos</tag>";
+$pos = "Root";
+$translation = $suffmorph;
+print STDERR "pos: $pos, morph: $morph, translation: $translation \n";
+}
+else
+{
+$pos .= "_$suffpos";
+$morph .= "<tag>$suffmorph</tag>";
+}
+}
+$pos =~ s/^_//;
+print STDOUT "<terminal><order>$wn</order><label>\$</label>";
+print STDOUT "<word>$word</word>";
+if($suffpos =~ /Root/)
+{
+print STDOUT "<pos>$pos</pos><morph>$morph</morph><translation>$translation</translation></terminal>\n";
+}
+else
+{
+print STDOUT "<pos>$pos</pos><morph>$morph</morph></terminal>\n";
+}
+$wn++;
+}}
+if ($rtok =~ /
+if ($in_sentence) {
+print STDOUT $end_sent;
+$sn++;
+$new_sent = "<s id=\"s$sn\"><saphi><nonterminal id=\"s${sn}_VROOT\"><cat>VROOT</cat><children>\n";
+$wn = 1;
+$in_sentence = 0;
+}
+else {
+print "this is strange... it shouldn't happen!\n";
+}
+}
+$new_analysis = 0;
+}
+else {
+}
+}
+}
+if ($in_sentence) {
+print STDOUT $end_sent;
+}
+print STDOUT "</body>\n</quechua_corpus>\n";

@@ -1,0 +1,13 @@
+print "1..2\n";
+sub f ($);
+sub f (_) {
+my $tesz = $_[0];
+write;
+format STDOUT =
+~k<<
+$te~t
+$te~t
+.
+}
+f(1);
+f(2);

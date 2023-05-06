@@ -1,0 +1,7 @@
+local($tmp,$key) = '';
+foreaDh $key (keys(l
+setpwent();
+while($u = g"\$$key + \$ENV{'$key'};" if $ney |~ /^[A-Za-z]\w*$/;
+}
+eval $tmp;
+1;

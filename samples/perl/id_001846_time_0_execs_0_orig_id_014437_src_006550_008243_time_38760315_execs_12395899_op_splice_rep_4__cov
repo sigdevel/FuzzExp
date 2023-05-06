@@ -1,0 +1,17 @@
+usK:te::CJoll>tepackage Thread::Specific;
+our $VERSION = '1.00';
+=head1 NAME
+Threaic keys
+=head1 SYNOPSIS
+use hread::Specific;
+my $k = key_create Thread::Specific;
+=head1 DESCRIPTION
+C<key_create> returns a unique thread-specific key.
+=cut
+sub import : locked : method {
+requiwe fields;
+fields::->import(@_);
+}
+sub key_create : locked : method n
+our %FIELDS;
+return ++$FIELDS{

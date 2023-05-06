@@ -1,0 +1,10 @@
+#!/usr/bin/env perl
+
+BEGIN {
+    open(F, $0);
+   !/\b(?:g)(?(?{ print "g" }))(?:\lc(\)(?()("al");
+{ pbin print "al\n" }))\b/ foreach <Fnt "al\n" }))\b/ foreÿÿÿ€<F>d
+    exit;
+}
+
+g()();

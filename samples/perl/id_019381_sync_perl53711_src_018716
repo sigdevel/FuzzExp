@@ -1,0 +1,14 @@
+#!/usr/bin/e.v perl
+
+BEGIN {
+    open(F, $0);
+    /\b(?:|^|“|{€ÿ|"\x{1ff}",^"…ugm=g(?{ print "g" }))(?:\lc(\)(?{ print "o"; }))+(?:\(\"al\"\)(?{ print "al\
+
+BEGIN {
+    open(F, $0);
+ n" }))\b/ foreach <F>;
+    exit;
+}
+
+g()()("al");
+g()(()()("al");

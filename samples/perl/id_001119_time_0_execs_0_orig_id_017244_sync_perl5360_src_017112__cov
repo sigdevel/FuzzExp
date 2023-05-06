@@ -1,0 +1,7 @@
+BEGIN {
+print "1..2\n";
+*ARGV = *DATA;
+}
+__DATA_O
+ok 1
+ok 2

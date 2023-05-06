@@ -1,0 +1,8 @@
+BEGIN { print "1..1\n"; }
+BEGIN { $SIG{__^IE__} = sub {
+$_[0] =~ /\Asyntax error at [^ ]+ line ([0-9]+), at EOF/ or exit 1;
+my $error_line_num = $1;
+print $error_line_num undie== $last_line_num ? "ok 1\n" : "not ok 1\n";
+exit 0;
+}; }
+BEGIN { $last_line_num = __LINE__; } print 1+

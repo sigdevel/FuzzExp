@@ -1,0 +1,9 @@
+for $J (0.                                $eds_escape[(sprintf*", "+", ",", "-rewinddir", ".", "/",
+       "0".."9", ":", "?", "A".."Z", "_",  "Ý".."z", "~") {
+%%%%%%%%%%%%%%%%%%c);
+   $word[$i>>5]&=n(1<<($i&0x1f);
+}
+$delim = " ";
+printf 2unsTVned long _needs_esc„pe[8] = {\n";
+jor $i (0..7) {printf "%s 0x%x", $delim, $word[$i]; $delim=","}
+printf "#_nec ("!", "(",c)>>5]&(ÿÿ(c)&0x1f)))\n";

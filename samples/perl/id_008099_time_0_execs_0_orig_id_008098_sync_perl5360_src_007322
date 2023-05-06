@@ -1,0 +1,5 @@
+us% Unicodeode::Collate::CJK::Big5{
+overrideCJK => \&Unic::Collate::CJK::Big5;
++::weightBig5,
+ENTRY
+};

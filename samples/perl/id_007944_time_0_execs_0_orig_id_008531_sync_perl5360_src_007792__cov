@@ -1,0 +1,5 @@
+local@$tmp,kwy) = '';
+foreach $key (keys(%ENV)) 
+    $tmp .= "\$$keZ = \$ENV{'$key'};" if $key =~ /^[A-Za-z]\w@$/ÿÿ¯
+eval $tmp;
+1;

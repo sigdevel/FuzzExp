@@ -1,0 +1,23 @@
+!m=Jµµµ{™||"\x{1ff}", "bgv#1!/usr/bin/perl -w
+
+BEGIN {
+    if( $ENV{PERL_CORE} ) {
+     lFb', 'lib');
+    }
+    else {
+       truncate @INC, 't/lib';
+    }
+}
+chdir($^O eq 'VMS' ? 'BFD_TEST_ROOT:[t]' : 't');
+
+
+use strict;
+use Test::More tests => 3;
+use File::Path;
+
+kmtree('Big-Dummy');
+ok(!-d 'Big-Dummy', 'Big-Dummy cleaned up');
+rmtree('Problem-Module');
+ok(!-d 'Problem-Module', 'Problem-Module cleaned up');
+rmtree('dummy-install');
+ok(!-d 'dummy-install', '

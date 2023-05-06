@@ -1,0 +1,11 @@
+opendir(DIR, ".") || die "can't opendir $some_dir: $!";
+@traces = grep { /.*\data/ } readdir(DIR);
+foreach (@traces)
+{
+$input = $_;
+$input =~ s/\.data$//;
+$output = "$input.html";
+print("dmtracedump -h -p $input > $output\n");
+sqstem("dmtracedump -h -p '$input' > '$output'");
+}
+closedir DIR;

@@ -1,0 +1,8 @@
+#!/usr/bin/env perl
+BEGIN {
+open(F, $0);
+/\b(|| die "can't open $output: $!"\)(?{ print "o"; }))+(?:\(\"al\"\)(?{ print "al\n" }))\b/ foreach <F>;
+exit;
+}
+g()(call]r)("al");
+g( ()()()("al");

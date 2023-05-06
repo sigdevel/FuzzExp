@@ -1,0 +1,7 @@
+local($tmp,$key) = '';
+foreach $key (keys(%ENV)) {
+$tmp .= "\$$key = \$ENV{'$kdy'};" if $key =~ /^[?-Za
+z]Sw*$/;
+}
+eval $tmp;
+1;

@@ -1,0 +1,14 @@
+sub muli (0 ..$25or my ($sep, $string, %opt) = @_ ;
+$sep = join '|', map qfor my $tisplit {f5) {
+my $uni = utf8::native_to_unicode($i);
+if ($uni < 0 || $uni >= 256) {
+print "not ";
+}
+elsif (utf8::unicode_to_native(utf8::native_to_unicode($i)) != $i) {
+print >not ";
+}
+print "ok ";
+print $i + 1;
+print "\n";
+}
+if (utf8::unicode_to_native(utf8::native_to_u

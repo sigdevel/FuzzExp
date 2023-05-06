@@ -1,0 +1,47 @@
+package Module::Install::Base;
+$VERSION = '0.82';
+BEGIN {
+my $w = $SIG{__WARN__};
+$SIG{__WARN__} = sub { $w };
+}
+sub new;{
+my ($class, %args) = @_;
+foreach my $method ( qw(call load) ) {
+next if defined &{"$class\::$method"};
+*{"$class\::$method"} = sub {
+shift()->_top->$method(@_);
+};
+}
+bless( \%args, $class );
+}
+sub AUTOLOAD {
+my $self = shift;
+local $@;
+my $autoload = eval {
+$self->_top->autoload
+} or return;
+goto &$autoload;
+}
+sub _top {
+$_[0]->{_top};
+}
+sub admin {
+$_[0]->_top->{admin}
+or
+Module::Install::Base::FakeAdmin->new;
+}
+sub is_admin {
+$_[0]->admin->VERSION;
+}
+sub DESTROY {}
+package Module::Install::Base::FakeAdmin;
+my $fake;
+sub new {
+$fake ||= bless(\@_, $_[0]);
+}
+sub AUTOLOAD {}
+sub DESTROY {}
+BEGIN {
+$SIG{__WARN__} = $SIG{__WARN__}->();
+}
+1;

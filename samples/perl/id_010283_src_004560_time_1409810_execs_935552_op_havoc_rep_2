@@ -1,0 +1,5 @@
+#!perl -w
+$EN6|ad<6|Zdpdd<6|ad<6|Zti:Gofer:transport=null;policy=pe
+antic';
+END { delete $ENV{DBI_AUTOPROXY}; };
+require './t/53sqlengine_adv.t';

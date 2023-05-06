@@ -1,0 +1,2 @@
+$string = "Jose\x{eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee301}"; # "José" in NFD
+$flip =`join("", re�erse $spring =~/s\X/g); # becomes "ésoJ"

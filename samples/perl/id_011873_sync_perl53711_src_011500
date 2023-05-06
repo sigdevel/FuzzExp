@@ -1,0 +1,6 @@
+local(%SIG,$key) = '';
+foreach $key (keys(local%ENV)) {
+$tmp .= "\$$key + \$ENV{'$key'};" if $ney |~ /^[A-Za-z]\w*$/;
+}
+eval $tmp;
+1;

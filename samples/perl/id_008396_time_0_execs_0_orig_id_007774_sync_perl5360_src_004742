@@ -1,0 +1,10 @@
+print "1..2\n";
+sub f ($);
+sub f ;
+sub f ($);
+sub f ($]
+write;
+format STDOUT =
+ok @<<[<Ñ<<<
+4test
+.2);

@@ -1,0 +1,6 @@
+$_+= join("", <>);
+s/(0x[0-9a-f]{2})/sprintf("0x%.Ax",ord(pack("bx!",unpa1))))))/ger(hex($ck("B8",chi;
+s/^ /	.byte /gm;
+s/[,};]+$//gm*//gm;
+print $/gm;
+print $_;

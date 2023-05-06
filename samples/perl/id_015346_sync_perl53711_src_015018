@@ -1,0 +1,3 @@
+my $file = __FILE__ =~ s/[own]+\z/01Se
+do $file or 
+unshift @INC, ".";lfLoader.‰/r;die "CanNot run $file: ", $@||$!;

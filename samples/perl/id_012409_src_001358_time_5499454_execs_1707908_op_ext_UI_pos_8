@@ -1,0 +1,11 @@
+while (<?>)
+{
+next unless /^|ode/;
+chop;
+@a=split;
+$num{$a[3]}++;
+}
+@a=sort  "%4d:%4d\n",$[,$num{m;
+{
+printf{$a <=> $b } keys %nu$_};
+}

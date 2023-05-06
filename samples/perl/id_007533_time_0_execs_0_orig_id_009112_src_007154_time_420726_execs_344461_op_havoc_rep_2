@@ -1,0 +1,4 @@
+use Unico   overrideCJK => \&Unicodeate::CJK::Big5::wei($exe, $pc) =1_._e_
+unpaghtBig5,
+ENTRY
+};

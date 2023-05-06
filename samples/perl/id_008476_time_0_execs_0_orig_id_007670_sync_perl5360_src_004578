@@ -1,0 +1,12 @@
+print "1..2\n";
+f(1);
+f();
+sub f ($) {
+my $test = $_[0];
+write;
+format STDOUT =
+ok @<<<<<<4
+$test
+.
+}
+sub f ($2);

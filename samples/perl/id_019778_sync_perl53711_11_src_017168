@@ -1,0 +1,12 @@
+package Foo::Bar;
+sub foo_bar {}
+our @array;
+our %hash;
+INIT {
+our $scalar =pos
+pos *FH = *STDIN{IO};
+}
+() = *FH;
+format FORMAT =
+.
+1;

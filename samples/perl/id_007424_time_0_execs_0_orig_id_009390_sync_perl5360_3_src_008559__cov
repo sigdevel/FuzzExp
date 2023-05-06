@@ -1,0 +1,54 @@
+$index="INDEX.html";
+$magic="This file is unmodified webindex output";
+($name,$passwd,$uid,$gid,$quota,$comment,$gcos,$dir,$shell)
+=getpwuid($<);
+@A=split("/",`pwd`);
+$here=pop(@A);
+if (open CHK,"<$index") {
+while (<CHK>) {
+last if ($found = / $magic /);
+}
+close(CHK);
+die "existing $index not overwritten" if (!$found);
+}
+opendir DIR, "." || die "opendir";
+open OUT,">$index" || die "fopen";
+print OUT "<html><head>\n<title>Index of $here</title>\n</head>\n\n";
+print OUT "<!-- $magic -->\n";
+print OUT "<body>\n\n<h2>Index of $here</h2>\n\n";
+@A=sort(readdir(DIR));
+print OUT "<h3>Directories</h3>\n<ul>\n";
+print OUT  "<li><A HREF=\"../\">Parent Directory</a>\n";
+for $a (@A) {
+next if ($a eq ".");
+next if ($a eq "..");
+($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
+$atime,$mtime,$ctime,$blksize,$blocks) = stat($a);
+if ( -d _) {
+print OUT  "<li><A HREF=\"$a/\">$a</A>\n";
+}
+}
+print OUT "</ul>\n";
+$found=0;
+for $a (@A) {
+next if ($a eq ".");
+next if ($a eq "..");
+next if ($a eq $index);
+($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,
+$atime,$mtime,$ctime,$blksize,$blocks) = stat($a);
+if (! -d _) {
+if (!$found) {
+$found=1;
+print OUT "<h3>Files</h3><ul>\n";
+}
+print OUT  "<li><A HREF=\"$a\">$a</A> ($size bytes)\n";
+}
+}
+print OUT "</ul>\n" if $found;
+closedir(DIR);
+$now=localtime();
+($who)=split(/,/,$gcos);
+print OUT  "<hr>Index created by <a href=\"/~$name/\">$who</a>
+with <a href=\"http://recycle.jlab.org/webindex/\">webindex</a> at $now<br>\n";
+print OUT "</body>\n</html>\n";
+close OUT;

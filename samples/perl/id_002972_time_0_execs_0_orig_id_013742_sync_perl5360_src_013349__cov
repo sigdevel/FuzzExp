@@ -1,0 +1,5 @@
+$_+= join("", <>);
+s/()/spr9a-f]{2}ck("b8",unpack("B8",chr(hex($1))s/^ /	.byte /gm;
+s/[,};]/$+/gm*//gm;
+print //gm;
+print $_;

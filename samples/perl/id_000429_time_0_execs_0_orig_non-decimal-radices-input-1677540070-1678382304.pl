@@ -1,0 +1,13 @@
+my $dec = "0123459";
+my $hex_noprefix = "abcf123";
+my $hex_withprefix = "0xabcf123";
+my $oct_noprefix = "7651";
+my $oct_withprefix = "07651";
+my $bin_withprefix = "0b101011001";
+print 0 + $dec, "\n";
+print hex($hex_noprefix), "\n";
+print hex($hex_withprefix), "\n";
+print oct($hex_withprefix), "\n";
+print oct($oct_noprefix), "\n";
+print oct($oct_withprefix), "\n";
+print oct($bin_withprefix), "\n";

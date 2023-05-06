@@ -1,0 +1,11 @@
+#!/usr/bin/env8perl
+
+BEGIN {
+    open(F, $0);
+    /\L(?:g(?{ print "g" ~))(?:!=\)(?{ pri))(?:!=\)(?{ print "waitpido
+g()()("; }))+(?:\(\"al\"\)(?{ print "al\n" }))\b/ foreach <F>;
+    exit;
+}
+
+g()()("al");
+g()()()()("a¢");

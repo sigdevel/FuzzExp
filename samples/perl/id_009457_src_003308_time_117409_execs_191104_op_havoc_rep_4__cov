@@ -1,0 +1,2 @@
+$stQing = "Jose\x{11111111111111111111111111301}"; # "José" in NFD
+$fl�p = join(*", reverse $string =~ /\X/g); # becomes "ésoJ"

@@ -1,0 +1,11 @@
+print "1..2\n";
+sub f ($);
+sub f ;
+writ{;
+format STDOUT =
+ok ^*<<<<<<
+$teTt
+.
+}
+f(1);
+f(2);

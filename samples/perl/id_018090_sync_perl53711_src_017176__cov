@@ -1,0 +1,7 @@
+#!/usr/bin/env perl
+my ($begin_line, $end_line)=values @ARGV,0,2;
+while (<>) {
+next if $. < $begin_line;
+print;
+exit if $. >=$end_line;
+}

@@ -1,0 +1,9 @@
+my sub f ($) {
+my $tfst/= $_[0];
+write;
+format STDOUT =
+ok @<<<<<<<~~~st
+.
+}
+f(1);
+f(2);

@@ -1,0 +1,1175 @@
+sub fs(&) {
+sub main {
+local (@HOPE_ARGS, %FILES, %DIRS, $PROMPT);
+local (@ZIP_TYPES, %ZIP_TYPES, $ZIP_TYPE_PAT);
+local ($TMP_DIR) = "/tmp";
+local ($TS_FILE) = ".co_$$";
+local ($DEFAULT_COMPOUND) = $ENV{"DEFAULT_COMPOUND"};
+local (@HOPE_CMD) = split (' ', ($ENV{"HOPE_CMD"} || "hope"));
+local (@GZIP_CMD) = split (' ', ($ENV{"GZIP_CMD"} || "gzip"));
+local (@GUNZIP_CMD) = split (' ', ($ENV{"GUNZIP_CMD"} || "gunzip"));
+local (@TOUCH_CMD) = split (' ', ($ENV{"TOUCH_CMD"} || "touch"));
+local (@FIND_CMD) = split (' ', ($ENV{"FIND_CMD"} || "find"));
+local (@RM_CMD) = split (' ', ($ENV{"RM_CMD"} || "rm"));
+local (@MV_CMD) = split (' ', ($ENV{"MV_CMD"} || "mv"));
+local (@PWD_CMD) = split (' ', ($ENV{"PWD_CMD"} || "pwd"));
+local ($ZIP_TYPES) = $ENV{"ZIP_TYPES"} ||
+".gz:.dgz=.doc:.bgz=.bk:.xgz=.xwd:.fgz=.tif:.cgz=.pcx:.pgz=.ps";
+$|=1;
+&process_zip_types;
+&process_arglist;
+&compress_files;
+&start_checkout;
+&print_hope_command ("checkin");
+system (@HOPE_CMD, "checkin", @HOPE_ARGS);
+&end_checkout;
+}
+sub process_zip_types {
+local (@Z_TYPES, $ZI_PAT, $TEMP, $i, $j);
+@Z_TYPES = split (':', $ZIP_TYPES);
+foreach $TYPE (@Z_TYPES) {
+$TYPE =~ /\s*([^=\s]*)\s*=*\s*([^=]*)\s*/;
+if ($1) {
+push (@ZIP_TYPES, $1);
+$ZIP_TYPES{$1} = $2;
+}
+}
+for ($i = 0; $i < @ZIP_TYPES - 1; $i++) {
+for ($j = $i + 1; $j < @ZIP_TYPES; $j++) {
+if ($ZIP_TYPES[$i] eq $ZIP_TYPES[$j]) {
+splice (@ZIP_TYPES, $j, 1);
+} else {
+($ZI_PAT = $ZIP_TYPES[$i]) =~ s/(\W)/\\$1/g;
+if ($ZIP_TYPES[$j] =~ /$ZI_PAT$/) {
+$TEMP = $ZIP_TYPES[$i];
+$ZIP_TYPES[$i] = $ZIP_TYPES[$j];
+$ZIP_TYPES[$j] = $TEMP;
+}
+}
+}
+}
+undef (@Z_TYPES);
+@Z_TYPES = @ZIP_TYPES;
+for ($i = 0; $i < @Z_TYPES; $i++) {
+$Z_TYPES[$i] =~ s/(\W)/\\$1/g;
+$Z_TYPES[$i] = "$Z_TYPES[$i]\$";
+}
+$ZIP_TYPE_PAT = join ('|', @Z_TYPES);
+}
+sub process_arglist {
+local ($COMPOUND, $FILENAME, @UNITS);
+local ($SELECTED_COMPOUND);
+local (%COMPOUND_DIRS, %COMPOUND_UNITS, %COMPOUND_SUBCOMPS);
+local ($ARG, $NEXT_ARG, $FULL_ARG, $NEXT_ACTION, $ARG_SCOPE);
+local (%ARG_ARRAY, %GLOBAL_ARGS_SEEN, %LOCAL_ARGS_SEEN, %CONJ_ARGS_SEEN);
+local ($MAX_UNITS) = 10000;
+local ($NO_ARG) = 0;
+local ($TAKES_ARG) = 1;
+local ($LOCAL_ARG) = 0;
+local ($GLOBAL_ARG) = 2;
+local ($CONJ_ARG) = 4;
+local ($ARG_NOT_SEEN) = 0;
+local ($ARG_SEEN) = 1;
+local ($SPEC_IS_COMPOUND) = 0;
+local ($SPEC_IS_UNIT) = 1;
+local ($RECURSIVE) = 0;
+local ($CHECKOUT) = 0;
+local ($CLAIM_USER);
+&fill_arg_array (*ARG_ARRAY);
+&fill_global_args_seen (*GLOBAL_ARGS_SEEN);
+&fill_local_args_seen (*LOCAL_ARGS_SEEN);
+&fill_conj_args_seen (*CONJ_ARGS_SEEN);
+if (&scan_arglist_for_help) { return; }
+while (@ARGV) {
+$ARG = shift (@ARGV);
+($FULL_ARG, $NEXT_ACTION) =
+&match_arg ($ARG, *ARG_ARRAY, *GLOBAL_ARGS_SEEN,
+*LOCAL_ARGS_SEEN, *CONJ_ARGS_SEEN);
+if ($FULL_ARG eq '-compound') {
+if (defined ($NEXT_ARG = &next_arg)) { $COMPOUND = $NEXT_ARG; }
+else {
+&argument_error ("No argument given for option ${FULL_ARG}.",
+*ARG_ARRAY);
+}
+} elsif ($FULL_ARG eq '-unit') {
+if (defined ($NEXT_ARG = &next_arg)) { push (@UNITS, $NEXT_ARG); }
+else {
+&argument_error ("No argument given for option ${FULL_ARG}.",
+*ARG_ARRAY);
+}
+} elsif ($FULL_ARG eq '-filename') {
+if (defined ($NEXT_ARG = &next_arg)) { $FILENAME = $NEXT_ARG; }
+else {
+&argument_error ("No argument given for option ${FULL_ARG}.",
+*ARG_ARRAY);
+}
+} elsif ($FULL_ARG eq '-user') {
+push (@HOPE_ARGS, $FULL_ARG);
+if (defined ($NEXT_ARG = &next_arg)) {
+$CLAIM_USER = $NEXT_ARG;
+push (@HOPE_ARGS, $NEXT_ARG);
+} else {
+&argument_error ("No argument given for option ${FULL_ARG}.",
+*ARG_ARRAY);
+}
+} elsif ($FULL_ARG eq '-recursive') {
+$RECURSIVE = 1;
+push (@HOPE_ARGS, $FULL_ARG);
+} elsif ($FULL_ARG eq '-not-recursive') {
+$RECURSIVE = 0;
+push (@HOPE_ARGS, $FULL_ARG);
+} elsif ($FULL_ARG eq '-prompt') {
+$PROMPT = 1;
+} elsif ($FULL_ARG eq '-and') {
+&process_object ($COMPOUND, $FILENAME, $RECURSIVE, @UNITS);
+undef ($FILENAME, @UNITS);
+&mark_array_not_seen (*LOCAL_ARGS_SEEN);
+push (@HOPE_ARGS, $FULL_ARG);
+} elsif ($NEXT_ACTION == $TAKES_ARG) {
+push (@HOPE_ARGS, $FULL_ARG);
+if (defined ($NEXT_ARG = &next_arg)) {
+push (@HOPE_ARGS, $NEXT_ARG);
+} else {
+&argument_error ("No argument given for option ${FULL_ARG}.",
+*ARG_ARRAY);
+}
+} else {
+push (@HOPE_ARGS, $FULL_ARG);
+}
+}
+&process_object ($COMPOUND, $FILENAME, $RECURSIVE, @UNITS);
+}
+sub fill_arg_array {
+local (*ARG_ARRAY) = @_;
+%ARG_ARRAY =
+(
+'-&',                    "-and $NO_ARG $CONJ_ARG",
+'-a',                    "-and $NO_ARG $CONJ_ARG",
+'-and',                  "-and $NO_ARG $CONJ_ARG",
+'-atomic',               "-atomic $NO_ARG $GLOBAL_ARG",
+'-b',                    "-branch $TAKES_ARG $LOCAL_ARG",
+'-branch',               "-branch $TAKES_ARG $LOCAL_ARG",
+'-bug-number',           "-bug-number $TAKES_ARG $LOCAL_ARG",
+'-c',                    "-compound $TAKES_ARG $LOCAL_ARG",
+'-checkout',             "-checkout $NO_ARG $GLOBAL_ARG",
+'-co',                   "-checkout $NO_ARG $GLOBAL_ARG",
+'-compound',             "-compound $TAKES_ARG $LOCAL_ARG",
+'-delete',               "-delete $NO_ARG $LOCAL_ARG",
+'-diff-branch-files',    "-diff-branch-files $TAKES_ARG $GLOBAL_ARG",
+'-directory',            "-directory $TAKES_ARG $LOCAL_ARG",
+'-filedate',             "-filedate $NO_ARG $LOCAL_ARG",
+'-filename',             "-filename $TAKES_ARG $LOCAL_ARG",
+'-fn',                   "-filename $TAKES_ARG $LOCAL_ARG",
+'-force-checkin',        "-force-checkin $NO_ARG $LOCAL_ARG",
+'-help',                 "-help $TAKES_ARG $GLOBAL_ARG",
+'-missing-dir',          "-missing-dir $TAKES_ARG $GLOBAL_ARG",
+'-missing-files',        "-missing-files $TAKES_ARG $GLOBAL_ARG",
+'-non-tip-files',        "-non-tip-files $TAKES_ARG $GLOBAL_ARG",
+'-not-atomic',           "-not-atomic $NO_ARG $GLOBAL_ARG -atomic",
+'-not-checkout',         "-not-checkout $NO_ARG $GLOBAL_ARG -checkout",
+'-not-delete',           "-not-delete $NO_ARG $LOCAL_ARG -delete",
+'-not-filedate',         "-not-filedate $NO_ARG $LOCAL_ARG -filedate",
+'-not-force-checkin',    "-not-force-checkin $NO_ARG $LOCAL_ARG -force-checkin",
+'-not-recursive',        "-not-recursive $NO_ARG $LOCAL_ARG -recursive",
+'-not-use-claim-reason', "-not-use-claim-reason $NO_ARG $LOCAL_ARG -use-claim-reason",
+'-prompt',               "-prompt $NO_ARG $GLOBAL_ARG",
+'-reason',               "-reason $TAKES_ARG $LOCAL_ARG",
+'-recursive',            "-recursive $NO_ARG $LOCAL_ARG",
+'-stale-claim',          "-stale-claim $TAKES_ARG $GLOBAL_ARG",
+'-task',                 "-task $TAKES_ARG $LOCAL_ARG",
+'-u',                    "-unit $TAKES_ARG $LOCAL_ARG",
+'-unclaimed',            "-unclaimed $TAKES_ARG $GLOBAL_ARG",
+'-unit',                 "-unit $TAKES_ARG $LOCAL_ARG",
+'-unmodified',           "-unmodified $TAKES_ARG $GLOBAL_ARG",
+'-use-claim-reason',     "-use-claim-reason $NO_ARG $LOCAL_ARG",
+'-user',                 "-user $TAKES_ARG $LOCAL_ARG",
+'-v',                    "-branch $TAKES_ARG $LOCAL_ARG",
+'-version',              "-branch $TAKES_ARG $LOCAL_ARG",
+'-wrong-branch-files',   "-diff-branch-files $TAKES_ARG $GLOBAL_ARG",
+);
+}
+sub fill_global_args_seen {
+local (*GLOBAL_ARGS_SEEN) = @_;
+%GLOBAL_ARGS_SEEN =
+(
+'-atomic',            $ARG_NOT_SEEN,
+'-checkout',          $ARG_NOT_SEEN,
+'-diff-branch-files', $ARG_NOT_SEEN,
+'-help',              $ARG_NOT_SEEN,
+'-missing-dir',       $ARG_NOT_SEEN,
+'-missing-files',     $ARG_NOT_SEEN,
+'-non-tip-files',     $ARG_NOT_SEEN,
+'-prompt',            $ARG_NOT_SEEN,
+'-stale-claim',       $ARG_NOT_SEEN,
+'-unclaimed',         $ARG_NOT_SEEN,
+'-unmodified',        $ARG_NOT_SEEN,
+);
+}
+sub fill_local_args_seen {
+local (*LOCAL_ARGS_SEEN) = @_;
+%LOCAL_ARGS_SEEN =
+(
+'-branch',            $ARG_NOT_SEEN,
+'-bug-number',        $ARG_NOT_SEEN,
+'-compound',          $ARG_NOT_SEEN,
+'-delete',            $ARG_NOT_SEEN,
+'-directory',         $ARG_NOT_SEEN,
+'-filedate',          $ARG_NOT_SEEN,
+'-filename',          $ARG_NOT_SEEN,
+'-force-checkin',     $ARG_NOT_SEEN,
+'-reason',            $ARG_NOT_SEEN,
+'-recursive',         $ARG_NOT_SEEN,
+'-task',              $ARG_NOT_SEEN,
+'-unit',              $ARG_NOT_SEEN,
+'-use-claim-reason',  $ARG_NOT_SEEN,
+'-user',              $ARG_NOT_SEEN,
+);
+}
+sub fill_conj_args_seen {
+local (*CONJ_ARGS_SEEN) = @_;
+%CONJ_ARGS_SEEN =
+(
+'-and',               $ARG_SEEN,
+);
+}
+sub mark_array_not_seen {
+local (*ARRAY) = @_;
+foreach $KEY (keys (%ARRAY)) {
+$ARRAY{$KEY} = $ARG_NOT_SEEN;
+}
+}
+sub scan_arglist_for_help {
+local ($HELP_SEEN) = 0;
+scan: foreach $ARG (@ARGV) {
+if ($ARG eq '-help') {
+$HELP_SEEN = 1;
+last scan;
+}
+}
+if ($HELP_SEEN) { @HOPE_ARGS = @ARGV; }
+$HELP_SEEN;
+}
+sub match_arg {
+local ($ARG, *ARG_ARRAY, *GLOBAL_ARGS_SEEN, *LOCAL_ARGS_SEEN,
+*CONJ_ARGS_SEEN) = @_;
+local ($FULL_ARG, $NEXT_ACTION, $ARG_SCOPE, $ARG_CATEGORY);
+local ($ARG_PAT);
+local (@MATCHES, $MATCH, $i);
+if ($ARG !~ /^-/) {
+$MATCH = '-unit';
+unshift (@ARGV, $ARG);
+} else {
+($ARG_PAT = $ARG) =~ s/(\W)/\\$1/g;
+$ARG_PAT = "^${ARG_PAT}";
+argmatch: foreach $KEY (keys (%ARG_ARRAY)) {
+if ($KEY =~ $ARG_PAT) {
+if ($KEY eq $ARG) {
+$MATCH = $KEY;
+last argmatch;
+}
+else { push (@MATCHES, $KEY); }
+}
+}
+}
+if (! $MATCH) {
+if (! @MATCHES) {
+&argument_error ("Unrecognized option ${ARG}.", *ARG_ARRAY);
+} elsif (@MATCHES == 1) { $MATCH = $MATCHES[0]; }
+else {
+$ERR_STRING = "Multiple completions for option ${ARG}:";
+@MATCHES = sort (@MATCHES);
+for ($i = 0; $i < @MATCHES; $i++) {
+$ERR_STRING = "$ERR_STRING $MATCHES[$i]";
+if ((@MATCHES > 2) && ($i < (@MATCHES - 1))) {
+$ERR_STRING = "${ERR_STRING},";
+}
+if ($i == (@MATCHES - 2)) { $ERR_STRING = "$ERR_STRING and"; }
+}
+$ERR_STRING = "${ERR_STRING}.";
+&argument_error ($ERR_STRING, *ARG_ARRAY);
+}
+}
+($FULL_ARG, $NEXT_ACTION, $ARG_SCOPE, $ARG_CATEGORY) =
+split (' ', $ARG_ARRAY{$MATCH});
+$ARG_CATEGORY = $ARG_CATEGORY || $FULL_ARG;
+if ($ARG_SCOPE == $GLOBAL_ARG) {
+if ($GLOBAL_ARGS_SEEN{$ARG_CATEGORY} == $ARG_SEEN) {
+&argument_error ("Multiple use of global option $ARG_CATEGORY.",
+*ARG_ARRAY);
+} else {
+$GLOBAL_ARGS_SEEN{$ARG_CATEGORY} = $ARG_SEEN;
+&mark_array_not_seen (*CONJ_ARGS_SEEN);
+}
+} elsif ($ARG_SCOPE == $LOCAL_ARG) {
+if (($LOCAL_ARGS_SEEN{$ARG_CATEGORY} == $ARG_SEEN) &&
+(! ($FULL_ARG eq '-unit'))) {
+&argument_error ("Multiple use of option $ARG_CATEGORY.",
+*ARG_ARRAY);
+} else {
+$LOCAL_ARGS_SEEN{$ARG_CATEGORY} = $ARG_SEEN;
+&mark_array_not_seen (*CONJ_ARGS_SEEN);
+}
+} elsif ($ARG_SCOPE == $CONJ_ARG) {
+if (($CONJ_ARGS_SEEN{$ARG_CATEGORY} == $ARG_SEEN) || (! @ARGV)) {
+&argument_error
+("Repeated, initial, or final use of option $ARG_CATEGORY.",
+*ARG_ARRAY);
+} else { $CONJ_ARGS_SEEN{$ARG_CATEGORY} = $ARG_SEEN; }
+}
+($FULL_ARG, $NEXT_ACTION);
+}
+sub next_arg {
+local ($NEXT_ARG);
+if (@ARGV) {
+$NEXT_ARG = shift (@ARGV);
+if ($NEXT_ARG =~ /^-/) {
+unshift (@ARGV, $NEXT_ARG);
+undef;
+} else { $NEXT_ARG; }
+} else { undef; }
+}
+sub argument_error {
+local ($ERR_STRING, *ARG_ARRAY) = @_;
+&print_error ($ERR_STRING);
+&show_options (*ARG_ARRAY);
+exit (1);
+}
+sub show_options {
+local (*ARG_ARRAY) = @_;
+local (@OPTIONS) = sort (keys (%ARG_ARRAY));
+local ($FULL_ARG, $NEXT_ACTION);
+if (@OPTIONS) {
+print "Recognized options for this command:\n";
+foreach $OPTION (@OPTIONS) {
+($FULL_ARG, $NEXT_ACTION) = split (' ', $ARG_ARRAY{$OPTION});
+print " ${OPTION}";
+if ($NEXT_ACTION == $TAKES_ARG) { print " <argument>"; }
+print "\n";
+}
+} else { print "No recognized options for this command.\n"; }
+}
+sub process_object {
+local ($COMPOUND, $FILENAME, $RECURSIVE, @UNITS) = @_;
+local ($UNIT, $i);
+local ($UNIT_COMPOUND, $UNIT_UNIT, $UNIT_BRANCH);
+local ($COMP_COMPOUND, $COMP_UNIT, $COMP_BRANCH) =
+&parse_hopespec($COMPOUND, $SPEC_IS_COMPOUND);
+for ($i = 0; $i < @UNITS; $i++) {
+$UNIT = $UNITS[$i];
+($UNIT_COMPOUND, $UNIT_UNIT, $UNIT_BRANCH) =
+&parse_hopespec($UNIT, $SPEC_IS_UNIT);
+if ($COMP_UNIT && $UNIT_UNIT) {
+&hope_spec_error
+("Unit specified in both -compound ($COMPOUND) and -unit ($UNIT).");
+}
+($UNITS[$i], $FILENAME) =
+&match_spec ($UNIT, $FILENAME, $RECURSIVE, $COMP_COMPOUND,
+$COMP_UNIT, $COMP_BRANCH, $UNIT_COMPOUND, $UNIT_UNIT,
+$UNIT_BRANCH, undef);
+}
+if (! @UNITS) {
+($COMPOUND, $FILENAME) =
+&match_spec ($COMPOUND, $FILENAME, $RECURSIVE, $COMP_COMPOUND,
+$COMP_UNIT, $COMP_BRANCH, $UNIT_COMPOUND, $UNIT_UNIT,
+$UNIT_BRANCH, undef);
+}
+&add_object_to_hope_args ($COMPOUND, $FILENAME, @UNITS);
+$COMPOUND;
+}
+sub parse_hopespec {
+local ($SPEC, $SPEC_TYPE) = @_;
+local ($UNDEFINED) = '()';
+local ($COMPOUND) = $UNDEFINED;
+local ($UNIT) = $UNDEFINED;
+local ($BRANCH) = $UNDEFINED;
+if ($SPEC =~ /^([^\!\(\)]*)\!([^\!\(\)]*)\(([^\!\(\)]*)\)$/) {
+$COMPOUND = $1;
+$UNIT = $2;
+$BRANCH = $3;
+} elsif ($SPEC =~ /^([^\!\(\)]*)\!([^\!\(\)]*)$/) {
+$COMPOUND = $1;
+$UNIT = $2;
+} elsif ($SPEC =~ /^([^\!\(\)]*)\(([^\!\(\)]*)\)$/) {
+if ($SPEC_TYPE == $SPEC_IS_COMPOUND) { $COMPOUND = $1; }
+elsif ($SPEC_TYPE == $SPEC_IS_UNIT) { $UNIT = $1; }
+$BRANCH = $2;
+} elsif ($SPEC =~ /^([^\!\(\)]*)$/) {
+if ($SPEC_TYPE == $SPEC_IS_COMPOUND) { $COMPOUND = $1; }
+elsif ($SPEC_TYPE == $SPEC_IS_UNIT) { $UNIT = $1; }
+} else {
+if ($SPEC_TYPE == $SPEC_IS_COMPOUND) {
+&hope_spec_error
+("Malformed HOPE spec representing a compound: $SPEC.");
+} elsif ($SPEC_TYPE == $SPEC_IS_UNIT) {
+&hope_spec_error
+("Malformed HOPE spec representing a unit: $SPEC.");
+} else {
+&hope_spec_error
+("Malformed HOPE spec representing an unknown component: $SPEC.");
+}
+}
+($COMPOUND eq $UNDEFINED ? undef : $COMPOUND,
+$UNIT eq $UNDEFINED ? undef : $UNIT,
+$BRANCH eq $UNDEFINED ? undef : $BRANCH);
+}
+sub match_spec {
+local ($SPEC, $FILENAME, $RECURSIVE,
+$COMP_COMPOUND, $COMP_UNIT, $COMP_BRANCH,
+$UNIT_COMPOUND, $UNIT_UNIT, $UNIT_BRANCH, $PARENT_DIR) = @_;
+local ($THIS_COMP, $THIS_UNIT, $NEW_UNIT, $NEW_FILE, $DIR, @MATCH_UNITS);
+if (defined ($UNIT_COMPOUND)) {
+$THIS_COMP = &find_compound ($UNIT_COMPOUND);
+} else { $THIS_COMP = &find_compound ($COMP_COMPOUND); }
+if ($THIS_COMP) {
+$THIS_UNIT = $UNIT_UNIT || $COMP_UNIT;
+if ($FILENAME && $THIS_UNIT) { &collect_file_dir ($FILENAME); }
+else {
+$DIR = &find_dir_for_compound ($THIS_COMP, $THIS_UNIT,
+$FILENAME, $PARENT_DIR);
+&collect_dir ($DIR);
+}
+if (($FILENAME && $THIS_UNIT) || $DIR) {
+($NEW_UNIT, @MATCH_UNITS) =
+&match_units_for_compound ($THIS_COMP, $THIS_UNIT);
+$NEW_FILE = &collect_files_for_units ($THIS_COMP, $THIS_UNIT, $DIR,
+$FILENAME, @MATCH_UNITS);
+if ($THIS_UNIT && $NEW_UNIT && ($THIS_UNIT ne $NEW_UNIT)) {
+$SPEC = &substitute_unit ($SPEC, $NEW_UNIT);
+}
+if ($FILENAME && $NEW_FILE && ($FILENAME ne $NEW_FILE)) {
+$FILENAME = $NEW_FILE;
+}
+if ($RECURSIVE && (! $THIS_UNIT)) {
+foreach $SUBCOMP (&get_subcomps_for_compound ($THIS_COMP)) {
+&match_spec (undef, undef, $RECURSIVE, $SUBCOMP, undef,
+undef, undef, undef, undef, $DIR);
+}
+}
+}
+}
+($SPEC, $FILENAME);
+}
+sub substitute_unit {
+local ($SPEC, $NEW_UNIT) = @_;
+local ($NEW_SPEC) = $SPEC;
+($NEW_SPEC =~ s/^([^\!\(\)]*\!)[^\!\(\)]*(\([^\!\(\)]*\))$/$1$NEW_UNIT$2/) ||
+($NEW_SPEC =~ s/^([^\!\(\)]*\!)[^\!\(\)]*$/$1$NEW_UNIT/) ||
+($NEW_SPEC =~ s/^[^\!\(\)]*(\([^\!\(\)]*\))$/$NEW_UNIT$1/) ||
+($NEW_SPEC =~ s/^[^\!\(\)]*$/$NEW_UNIT/) ||
+(&hope_spec_error ("Malformed HOPE spec: $SPEC."));
+$NEW_SPEC;
+}
+sub hope_spec_error {
+local ($ERR_STRING) = @_;
+&print_error ($ERR_STRING);
+exit (1);
+}
+sub find_compound {
+local ($COMPOUND) = @_;
+local ($RETVAL) = '';
+$COMPOUND || $DEFAULT_COMPOUND || do {
+if (defined ($SELECTED_COMPOUND)) { $SELECTED_COMPOUND }
+else {
+$SELECTED_COMPOUND = '';
+if (open (HOPEIN, "@HOPE_CMD select |")) {
+print "Getting currently selected compound from HOPE ...\n";
+hopein: while (<HOPEIN>) {
+if (/^\s*Compound\s*=\s*\`*([^\s\']*)/) {
+$SELECTED_COMPOUND = $1;
+last hopein;
+}
+}
+close (HOPEIN);
+if (!$SELECTED_COMPOUND) {
+print "Cannot find currently selected compound.\n";
+} elsif ($SELECTED_COMPOUND eq 'None') {
+print "No compound is currently selected.\n";
+$SELECTED_COMPOUND = '';
+}
+} else {
+print "Cannot get currently selected compound from HOPE.\n";
+}
+$SELECTED_COMPOUND;
+}
+}
+}
+sub find_dir_for_compound {
+local ($COMPOUND, $UNIT, $FILENAME, $PARENT_DIR) = @_;
+local ($COMP_DIR, $PDIR);
+if ($FILENAME && (! $UNIT)) {
+$FILENAME = &canonicalize_pathname ($FILENAME);
+if ( -d $FILENAME ) {
+$FILENAME;
+} else {
+print "Cannot find directory $FILENAME for compound $COMPOUND.\n";
+'';
+}
+} elsif ((defined ($PARENT_DIR)) && (! $PARENT_DIR)) {
+'';
+} elsif ($COMPOUND) {
+$COMP_DIR = &get_dir_for_compound ($COMPOUND);
+if ($COMP_DIR) {
+if ($PARENT_DIR) {
+$PDIR = $PARENT_DIR;
+if ($PDIR eq '.') { $PDIR = &cur_dir; }
+else { $PDIR =~ s/.*\/([^\/]+)$/$1/; }
+if ($COMP_DIR eq $PDIR) {
+$PARENT_DIR;
+} else {
+($PDIR = "${PARENT_DIR}/${COMP_DIR}") =~ s/\/+/\//g;
+if ( -d $PDIR ) {
+$PDIR;
+} else {
+print "Cannot find directory $COMP_DIR for compound ${COMPOUND}.\n";
+'';
+}
+}
+} elsif ($COMP_DIR eq &cur_dir) {
+'.';
+} elsif ( -d $COMP_DIR ) {
+"./$COMP_DIR";
+} else {
+print "Cannot find directory $COMP_DIR for compound ${COMPOUND}.\n";
+'';
+}
+} else {
+print "Cannot find directory for compound ${COMPOUND}.\n";
+'';
+}
+} else { ''; }
+}
+sub get_dir_for_compound {
+local ($COMPOUND) = @_;
+if ($COMPOUND) {
+if (! defined ($COMPOUND_DIRS{$COMPOUND})) {
+&get_data_for_compound ($COMPOUND);
+}
+$COMPOUND_DIRS{$COMPOUND};
+}
+}
+sub canonicalize_pathname {
+local ($PATH) = @_;
+if ($PATH) {
+$PATH =~ s/\/+/\//g;
+$PATH =~ s/(.)\/$/$1/;
+if ($PATH =~ /^\/|^\.$|^\.\.$|^\.\/|^\.\.\// ) { $PATH; }
+else { "./$PATH"; }
+}
+}
+sub cur_dir {
+$CUR_DIR || do {
+$CUR_DIR = `@PWD_CMD`;
+chop ($CUR_DIR);
+$CUR_DIR =~ s/.*\/([^\/]+)$/$1/;
+$CUR_DIR;
+}
+}
+sub collect_dir {
+local ($TESTDIR) = @_;
+local ($MATCH, $DIR, $DIRLEN, @LDIRS, $i);
+local ($TESTDIRLEN) = length ($TESTDIR);
+local ($CKOUT) = 0;
+if ($TESTDIRLEN) {
+if ($TESTDIR eq '/') {
+loop: foreach $VAL (values (%DIRS)) {
+if ($VAL) { $CKOUT = 1; last loop; }
+}
+undef (%DIRS);
+$DIRS{$TESTDIR} = $CKOUT | $CHECKOUT;
+} elsif (defined ($DIRS{'/'})) {
+$DIRS{'/'} |= $CHECKOUT;
+} else {
+@LDIRS = keys(%DIRS);
+for ($i = 0; ($i < @LDIRS) && (! $MATCH); $i++) {
+$DIR = $LDIRS[$i];
+$DIRLEN = length ($DIR);
+if ($TESTDIRLEN == $DIRLEN) {
+if ($TESTDIR eq $DIR) {
+$DIRS{$DIR} |= $CHECKOUT;
+$MATCH = 1;
+}
+} elsif ($TESTDIRLEN < $DIRLEN) {
+if ((substr ($DIR, 0, $TESTDIRLEN + 1) eq "${TESTDIR}/")) {
+$CKOUT = $DIRS{$DIR};
+delete ($DIRS{$DIR});
+$DIRS{$TESTDIR} = $CKOUT | $CHECKOUT;
+$MATCH = 1;
+}
+} elsif ((substr ($TESTDIR, 0, $DIRLEN + 1) eq "${DIR}/")) {
+$DIRS{$DIR} |= $CHECKOUT;
+$MATCH = 1;
+}
+}
+unless ($MATCH) { $DIRS{$TESTDIR} = $CHECKOUT; }
+}
+}
+%DIRS;
+}
+sub collect_file_dir {
+local ($FILE) = @_;
+if ($FILE) {
+if (! -d $FILE) {
+if ($FILE !~ s/(.*\/)[^\/]*$/$1/) {$FILE = '.'; }
+}
+$FILE = &canonicalize_pathname ($FILE);
+&collect_dir ($FILE);
+}
+}
+sub get_units_and_claims_for_compound {
+local ($COMPOUND) = @_;
+if ($COMPOUND) {
+if (! defined ($COMPOUND_UNITS{$COMPOUND})) {
+&get_data_for_compound ($COMPOUND);
+}
+split (/ /, $COMPOUND_UNITS{$COMPOUND}, $MAX_UNITS * 2);
+}
+}
+sub get_subcomps_for_compound {
+local ($COMPOUND) = @_;
+if ($COMPOUND) {
+if (! defined ($COMPOUND_SUBCOMPS{$COMPOUND})) {
+&get_data_for_compound ($COMPOUND);
+}
+split (' ', $COMPOUND_SUBCOMPS{$COMPOUND});
+}
+}
+sub get_data_for_compound {
+local ($COMPOUND) = @_;
+local ($IN_COMP, %UNITS_CLAIMS, @SUBCOMPS);
+if (open (HOPEIN,
+"@HOPE_CMD status -not-page -compound $COMPOUND -show attributes,units,claims,subcompounds -format program |")) {
+print "Getting data for compound $COMPOUND from HOPE ...\n";
+hopein: while (<HOPEIN>) {
+if ($IN_COMP) {
+if (/^\s*unit\s+(\S+)/) {
+if (!defined ($UNITS_CLAIMS{$1})) {
+$UNITS_CLAIMS{$1} = '';
+}
+} elsif (/^\s*subcompound\s+(\S+)/) {
+push (@SUBCOMPS, $1);
+} elsif (/^\s*claim\s+(\S+)\s+\S+\s+(\S+)/) {
+if ($UNITS_CLAIMS{$2}) {
+$UNITS_CLAIMS{$2} = "$UNITS_CLAIMS{$2};$1";
+} else { $UNITS_CLAIMS{$2} = $1; }
+} elsif (/^\s*attribute\s+_Directory\s+(\S+)/) {
+$COMPOUND_DIRS{$COMPOUND} = $1;
+} elsif (/^\s*endcompound/) {
+last hopein;
+}
+} elsif (/^\s*startcompound\s+${COMPOUND}\s/) {
+$IN_COMP = 1;
+}
+}
+close (HOPEIN);
+if ($IN_COMP) {
+$COMPOUND_UNITS{$COMPOUND} = join (' ', %UNITS_CLAIMS);
+$COMPOUND_SUBCOMPS{$COMPOUND} = join (' ', @SUBCOMPS);
+}
+} else {
+print "Cannot get data for compound $COMPOUND from HOPE.\n";
+}
+}
+sub match_units_for_compound {
+local ($COMPOUND, $UNIT) = @_;
+local ($NEW_UNIT) = $UNIT;
+local (%UNITS_CLAIMS) = &get_units_and_claims_for_compound ($COMPOUND);
+local (@MATCH_UNITS, @ZIP_UNITS);
+local ($UNZ_TYPE, $UNZ_TYPE_PAT, $UNIT_BASE, $SEARCH, $MATCH, $i);
+if (! $UNIT) {
+while (($UNIT, $CLAIMANT) = each (%UNITS_CLAIMS)) {
+if (($UNIT =~ /$ZIP_TYPE_PAT/) &&
+&unit_claimed ($COMPOUND, $UNIT, $CLAIMANT)) {
+push (@MATCH_UNITS, $UNIT);
+}
+}
+} elsif ($UNIT =~ /$ZIP_TYPE_PAT/) {
+if (defined ($UNITS_CLAIMS{$UNIT}) &&
+&unit_claimed ($COMPOUND, $UNIT, $UNITS_CLAIMS{$UNIT})) {
+push (@MATCH_UNITS, $UNIT);
+}
+} else {
+foreach $Z_TYPE (@ZIP_TYPES) {
+if ($UNZ_TYPE = $ZIP_TYPES{$Z_TYPE}) {
+($UNZ_TYPE_PAT = $UNZ_TYPE) =~ s/(\W)/\\$1/g;
+$UNZ_TYPE_PAT = "$UNZ_TYPE_PAT\$";
+$UNIT_BASE = $UNIT;
+if ($UNIT_BASE =~ s/$UNZ_TYPE_PAT//) {
+$SEARCH = "${UNIT_BASE}${Z_TYPE}";
+} else { $SEARCH = ''; }
+} else { $SEARCH = "${UNIT}${Z_TYPE}"; }
+if ($SEARCH && defined ($UNITS_CLAIMS{$SEARCH})) {
+$MATCH = 0;
+for ($i = 0; ($i < @ZIP_UNITS) && (! $MATCH); $i++) {
+if ($SEARCH eq $ZIP_UNITS[$i]) { $MATCH = 1; }
+}
+if (! $MATCH) { push (@ZIP_UNITS, $SEARCH); }
+}
+}
+if (@ZIP_UNITS) {
+if (defined ($UNITS_CLAIMS{$UNIT})) {
+unshift (@ZIP_UNITS, $UNIT);
+}
+if (@ZIP_UNITS > 1) {
+print "Found units";
+for ($i = 0; $i < @ZIP_UNITS; $i++) {
+print " $ZIP_UNITS[$i]";
+if ((@ZIP_UNITS > 2) && ($i < (@ZIP_UNITS - 1))) {
+print ",";
+}
+if ($i == (@ZIP_UNITS - 2)) { print " and"; }
+}
+print " in compound $COMPOUND\n";
+}
+loop: foreach $ZIP_UNIT (@ZIP_UNITS) {
+if (&unit_claimed ($COMPOUND, $ZIP_UNIT,
+$UNITS_CLAIMS{$ZIP_UNIT})) {
+if (@ZIP_UNITS > 1) {
+print "Trying unit $ZIP_UNIT\n";
+}
+unless ($UNIT eq $ZIP_UNIT) {
+push (@MATCH_UNITS, $ZIP_UNIT);
+$NEW_UNIT = $ZIP_UNIT;
+}
+last loop;
+}
+}
+}
+}
+($NEW_UNIT, @MATCH_UNITS);
+}
+sub unit_claimed {
+local ($COMPOUND, $UNIT, $CLAIMANT) = @_;
+local ($THIS_USER) = $CLAIM_USER || &cur_user;
+local ($MATCH) = 0;
+loop: foreach $USER (split (/\;/, $CLAIMANT)) {
+if ($USER eq $THIS_USER) {
+$MATCH = 1;
+last loop;
+}
+}
+if (! $MATCH) {
+print "Unit $UNIT in compound $COMPOUND does not appear to be claimed by user ${THIS_USER}.\n";
+}
+$MATCH;
+}
+sub cur_user {
+$CUR_USER || ($CUR_USER = (getpwuid($<))[0]);
+}
+sub collect_files_for_units {
+local ($COMPOUND, $THIS_UNIT, $DIR, $FILENAME, @MATCH_UNITS) = @_;
+local ($F, $BASE);
+local ($UNIT_TYPE, $UNIT_TYPE_PAT, $UNZ_TYPE, $UNZ_TYPE_PAT);
+if ($FILENAME && $THIS_UNIT) {
+$FILENAME = &canonicalize_pathname ($FILENAME);
+}
+foreach $UNIT (@MATCH_UNITS) {
+$UNIT_TYPE = (($UNIT =~ /($ZIP_TYPE_PAT)/) && $1);
+($UNIT_TYPE_PAT = $UNIT_TYPE) =~ s/(\W)/\\$1/g;
+$UNIT_TYPE_PAT = "$UNIT_TYPE_PAT\$";
+if ($FILENAME && $THIS_UNIT && (! -d $FILENAME)) {
+if ($UNZ_TYPE = $ZIP_TYPES{$UNIT_TYPE}) {
+($UNZ_TYPE_PAT = $UNZ_TYPE) =~ s/(\W)/\\$1/g;
+$UNZ_TYPE_PAT = "$UNZ_TYPE_PAT\$";
+$F = $FILENAME;
+if ($F =~ /$UNIT_TYPE_PAT/) {
+($BASE = $F) =~ s/$UNIT_TYPE_PAT//;
+$BASE = "${BASE}${UNZ_TYPE}";
+} elsif ($F =~ s/$UNZ_TYPE_PAT//) {
+$F = "${F}${UNIT_TYPE}";
+$BASE = $FILENAME;
+} else { $F = ''; }
+} elsif ($FILENAME =~ /$UNIT_TYPE_PAT/) {
+$F = $FILENAME;
+($BASE = $F) =~ s/$UNIT_TYPE_PAT//;
+} else {
+$F = "${FILENAME}${UNIT_TYPE}";
+$BASE = $FILENAME;
+}
+if ($F) {
+if (( -w $F ) && (! ( -d $F ))) {
+$FILENAME = $F;
+print "Checking in writable file ${F} corresponding to unit $UNIT in compound $COMPOUND.\n";
+} elsif (( -w $BASE ) && (! ( -d $BASE ))) {
+$FILENAME = $F;
+$FILES{$BASE} = $UNIT_TYPE;
+} else {
+print "Cannot find writable file ${BASE} or ${F} corresponding to unit $UNIT in compound $COMPOUND.\n";
+}
+} elsif (( -w $FILENAME ) && (! ( -d $FILENAME ))) {
+print "Checking in writable file ${FILENAME} corresponding to unit $UNIT in compound $COMPOUND.\n";
+} else {
+print "Cannot find writable file ${FILENAME} corresponding to unit $UNIT in compound $COMPOUND.\n";
+}
+} else {
+if ($FILENAME && $THIS_UNIT) { $DIR = $FILENAME; }
+($F = $UNIT) =~ s/:/\//g;
+($BASE = $F) =~ s/$UNIT_TYPE_PAT//;
+if ($UNZ_TYPE = $ZIP_TYPES{$UNIT_TYPE}) {
+$BASE = "${BASE}${UNZ_TYPE}";
+}
+if ($DIR) {
+local ($D);
+($D = $DIR) =~ s/\/$//;
+if (( -w "${D}/${F}" ) && (! ( -d "${D}/${F}" ))) {
+print "Checking in writable file ${D}/${F} corresponding to unit $UNIT in compound $COMPOUND.\n";
+} elsif (( -w "${D}/${BASE}" ) && (! ( -d "${D}/${BASE}" ))) {
+$FILES{"${D}/${BASE}"} = $UNIT_TYPE;
+} else {
+print "Cannot find writable file ${D}/${BASE} or ${D}/${F} corresponding to unit $UNIT in compound $COMPOUND.\n";
+}
+} else {
+print "Cannot find writable file ${BASE} or ${F} corresponding to unit $UNIT in compound $COMPOUND.\n";
+}
+}
+}
+$FILENAME;
+}
+sub add_object_to_hope_args {
+local ($COMPOUND, $FILENAME, @UNITS) = @_;
+local ($i);
+if ($COMPOUND) { push (@HOPE_ARGS, "-compound", $COMPOUND); }
+if ($FILENAME) { push (@HOPE_ARGS, "-filename", $FILENAME); }
+for ($i = 0; $i < @UNITS; $i++) {
+$UNIT = $UNITS[$i];
+push (@HOPE_ARGS, "-unit", $UNIT);
+if ($i < (@UNITS - 1)) {
+push (@HOPE_ARGS, "-and");
+if ($FILENAME) { push (@HOPE_ARGS, "-filename", $FILENAME); }
+}
+}
+}
+sub compress_files {
+local ($Z_TYPE, $UNZ_TYPE, $UNZ_TYPE_PAT, $BASE, $Z_FILE);
+local ($TMP_FILE, $TMP_ZFILE);
+if (%FILES) {
+&print_files ("c");
+if ($PROMPT) { &prompt_for_files ("c"); }
+}
+if (%FILES) {
+if ($PROMPT) { &print_files ("c"); }
+files: foreach $FILE (sort (keys (%FILES))) {
+$Z_TYPE = $FILES{$FILE};
+if ($UNZ_TYPE = $ZIP_TYPES{$Z_TYPE}) {
+($UNZ_TYPE_PAT = $UNZ_TYPE) =~ s/(\W)/\\$1/g;
+$UNZ_TYPE_PAT = "$UNZ_TYPE_PAT\$";
+($BASE = $FILE) =~ s/$UNZ_TYPE_PAT//;
+$Z_FILE = "${BASE}${Z_TYPE}";
+if ( -e $Z_FILE ) {
+if ( -d $Z_FILE ) {
+&print_warning ("Directory $Z_FILE already exists; not compressing $FILE.");
+} else {
+local ($DO_RM);
+if ((! ( -w $Z_FILE )) && (! $PROMPT)) {
+$DO_RM = 1;
+&print_warning ("Overwriting existing file $Z_FILE.");
+} elsif (&prompt_for_overwrite ($Z_FILE)) {
+$DO_RM = 1;
+}
+if ($DO_RM) {
+system (@RM_CMD, "-f", "$Z_FILE");
+if ( -e $Z_FILE ) {
+&print_error ("@RM_CMD failed to delete $Z_FILE; not compressing $FILE.");
+}
+}
+}
+}
+if (! ( -e $Z_FILE )) {
+$TMP_FILE = "${BASE}$$";
+$TMP_ZFILE = "${TMP_FILE}${Z_TYPE}";
+if (! (( -e $TMP_FILE) || ( -e $TMP_ZFILE ))) {
+system (@MV_CMD, "$FILE", "$TMP_FILE");
+if ( -e $TMP_FILE ) {
+system (@GZIP_CMD, "-S", "$Z_TYPE", "$TMP_FILE");
+if ( -e $TMP_ZFILE ) {
+system (@MV_CMD, "$TMP_ZFILE", "$Z_FILE");
+} else {
+&print_error ("@GZIP_CMD failed to compress temporary file $TMP_FILE, renamed from $FILE.  Renaming $TMP_FILE to $FILE.");
+system (@MV_CMD, "$TMP_FILE", "$FILE");
+}
+} else {
+&print_error ("@MV_CMD failed to rename $FILE to $TMP_FILE; not compressing $FILE.");
+}
+} else {
+&print_error ("Cannot rename $FILE to temporary file $TMP_FILE because $TMP_FILE or $TMP_ZFILE already exists; not compressing $FILE.");
+}
+}
+} else {
+local ($FORCE);
+$Z_FILE = "${FILE}${Z_TYPE}";
+if ( -e $Z_FILE ) {
+if ( -d $Z_FILE ) {
+&print_warning ("Directory $Z_FILE already exists; not compressing $FILE.");
+next files;
+} elsif ((! ( -w $Z_FILE )) && (! $PROMPT)) {
+$FORCE = 1;
+&print_warning ("Overwriting existing file $Z_FILE.");
+}
+}
+if ($FORCE) {
+system (@GZIP_CMD, "-f", "-S", "$Z_TYPE", "$FILE");
+} else {
+system (@GZIP_CMD, "-S", "$Z_TYPE", "$FILE");
+}
+}
+}
+}
+}
+sub print_files {
+local ($COMPRESS) = @_;
+local (@FILES) = sort (keys (%FILES));
+if ($COMPRESS =~ /^[cC]/) { $COMPRESS = "Compressing"; }
+else { $COMPRESS = "Uncompressing"; }
+print "$COMPRESS the following file";
+if (@FILES > 1) { print "s"; }
+print ":\n";
+foreach $FILE (@FILES) { print "${FILE}\n"; }
+}
+sub prompt_for_files {
+local ($COMPRESS) = @_;
+local ($SELECTIVE, $COMP_LC);
+local (@FILES) = sort (keys (%FILES));
+if (! @FILES) { return; }
+if ($COMPRESS =~ /^[cC]/) { $COMPRESS = "Compress"; }
+else { $COMPRESS = "Uncompress"; }
+($COMP_LC = $COMPRESS) =~ tr/CU/cu/;
+if (@FILES == 1) { $SELECTIVE = 1; }
+else {
+prompt: {
+print "$COMPRESS these files? [y, n, s, ?] ";
+while (<STDIN>) {
+chop;
+if (/^\s*[yY]\s*$|^\s*[yY][eE][sS]\s*$/) { return; }
+elsif (/^\s*[nN]\s*$|^\s*[nN][oO]\s*$/) {
+undef %FILES;
+return;
+} elsif (/^\s*[sS]\s*$/) {
+$SELECTIVE = 1;
+last prompt;
+} else {
+print "Possible responses are:\n";
+print "  y  ($COMP_LC all files)\n";
+print "  n  (do not $COMP_LC any files)\n";
+print "  s  (selectively $COMP_LC, prompting for each file)\n";
+print "  ?  (print this message)\n";
+redo prompt;
+}
+}
+}
+}
+if ($SELECTIVE) {
+file: foreach $FILE (@FILES) {
+prompt: {
+print "$COMPRESS ", $FILE, "? [y, n, a, ?] ";
+while (<STDIN>) {
+chop;
+if (/^\s*[yY]\s*$|^\s*[yY][eE][sS]\s*$/) { next file; }
+elsif (/^\s*[nN]\s*$|^\s*[nN][oO]\s*$/) {
+delete ($FILES{$FILE});
+next file;
+} elsif (/^\s*[aA]\s*$|^\s*[aA][lL][lL]\s*$/) { return; }
+else {
+print "Possible responses are:\n";
+print "  y  ($COMP_LC $FILE)\n";
+print "  n  (do not $COMP_LC $FILE)\n";
+print "  a  ($COMP_LC $FILE and all remaining files)\n";
+print "  ?  (print this message)\n";
+redo prompt;
+}
+}
+}
+}
+}
+}
+sub prompt_for_overwrite {
+local ($FILE) = @_;
+prompt: {
+print "File $FILE already exists; do you wish to overwrite? [y, n, ?] ";
+while (<STDIN>) {
+chop;
+if (/^\s*[yY]\s*$|^\s*[yY][eE][sS]\s*$/) { return (1); }
+elsif (/^\s*[nN]\s*$|^\s*[nN][oO]\s*$/) { return (0); }
+else {
+print "Possible responses are:\n";
+print "  y  (overwrite $FILE)\n";
+print "  n  (do not overwrite $FILE)\n";
+print "  ?  (print this message)\n";
+redo prompt;
+}
+}
+}
+}
+sub start_checkout {
+while (($DIR, $CKOUT) = (each (%DIRS))) {
+if ($CKOUT) {
+if ( 0 ) {
+if ($DIR =~ /\/$/) { $DIRS{$DIR} = "${DIR}${TS_FILE}" }
+else { $DIRS{$DIR} = "${DIR}/${TS_FILE}" }
+&set_signal_handlers;
+system (@TOUCH_CMD, "$DIRS{$DIR}");
+} else {
+if ( -w $TMP_DIR ) {
+$DIRS{$DIR} = "${TMP_DIR}/${TS_FILE}";
+&set_signal_handlers;
+system (@TOUCH_CMD, "$DIRS{$DIR}");
+} else { $DIRS{$DIR} = 0; }
+}
+}
+}
+}
+sub end_checkout {
+undef (%FILES);
+while (($DIR, $TS_FILE) = each (%DIRS)) {
+if ($TS_FILE) {
+if ( -d $DIR ) {
+local (%LFILES);
+print "Searching for files to uncompress in directory $DIR ...\n";
+foreach $TYPE (@ZIP_TYPES) {
+if (open (FINDIN,
+"@FIND_CMD $DIR -name '*$TYPE' -print |")) {
+while (<FINDIN>) {
+chop;
+if (! defined ($LFILES{$_})) {
+$LFILES{$_} = $TYPE;
+}
+}
+close (FINDIN);
+}
+}
+if (%LFILES) {
+local ($TSTIME) = (stat ($TS_FILE))[9];
+if ($TSTIME) {
+while (($FILE, $TYPE) = each (%LFILES)) {
+local ($FTIME) = (stat ($FILE))[9];
+if ($FTIME && ($FTIME >= $TSTIME)) {
+if (! defined ($FILES{$FILE})) {
+$FILES{$FILE} = $TYPE;
+}
+}
+}
+}
+}
+}
+}
+}
+foreach $TS_FILE (values (%DIRS)) {
+if ($TS_FILE) { system (@RM_CMD, "-f", "$TS_FILE"); }
+}
+&clear_signal_handlers;
+&uncompress_files;
+}
+sub uncompress_files {
+local ($Z_TYPE, $Z_TYPE_PAT, $UNZ_TYPE, $BASE, $UNZ_FILE);
+local ($TMP_FILE, $TMP_ZFILE);
+if (%FILES) {
+&print_files ("u");
+if ($PROMPT) { &prompt_for_files ("u"); }
+}
+if (%FILES) {
+if ($PROMPT) { &print_files ("u"); }
+files: foreach $FILE (sort (keys (%FILES))) {
+if (( -z $FILE ) || (system @GUNZIP_CMD, "-t", "-q", "$FILE")) {
+&print_warning ("$FILE does not appear to be a properly compressed file; not uncompressing it.");
+next files;
+}
+$Z_TYPE = $FILES{$FILE};
+($Z_TYPE_PAT = $Z_TYPE) =~ s/(\W)/\\$1/g;
+$Z_TYPE_PAT = "$Z_TYPE_PAT\$";
+($BASE = $FILE) =~ s/$Z_TYPE_PAT//;
+if ($UNZ_TYPE = $ZIP_TYPES{$Z_TYPE}) {
+$UNZ_FILE = "${BASE}${UNZ_TYPE}";
+if ( -e $UNZ_FILE ) {
+if ( -d $UNZ_FILE ) {
+&print_warning ("Directory $UNZ_FILE already exists; not uncompressing $FILE.");
+} else {
+local ($DO_RM);
+if ((! ( -w $UNZ_FILE )) && (! $PROMPT)) {
+$DO_RM = 1;
+&print_warning ("Overwriting existing file $UNZ_FILE.");
+} elsif (&prompt_for_overwrite ($UNZ_FILE)) {
+$DO_RM = 1;
+}
+if ($DO_RM) {
+system (@RM_CMD, "-f", "$UNZ_FILE");
+if ( -e $UNZ_FILE ) {
+&print_error ("@RM_CMD failed to delete $UNZ_FILE; not uncompressing $FILE.");
+}
+}
+}
+}
+if (! ( -e $UNZ_FILE )) {
+$TMP_FILE = "${BASE}$$";
+$TMP_ZFILE = "${TMP_FILE}${Z_TYPE}";
+if (! (( -e $TMP_FILE ) || ( -e $TMP_ZFILE ))) {
+system (@MV_CMD, "$FILE", "$TMP_ZFILE");
+if ( -e $TMP_ZFILE ) {
+system (@GUNZIP_CMD, "-n", "-S", "$Z_TYPE", "$TMP_ZFILE");
+if ( -e $TMP_FILE ) {
+system (@MV_CMD, "$TMP_FILE", "$UNZ_FILE");
+} else {
+&print_error ("@GUNZIP_CMD failed to uncompress temporary file $TMP_ZFILE, renamed from $FILE.  Renaming $TMP_ZFILE to $FILE.");
+system (@MV_CMD, "$TMP_ZFILE", "$FILE");
+}
+} else {
+&print_error ("@MV_CMD failed to rename $FILE to $TMP_ZFILE; not uncompressing $FILE.");
+}
+} else {
+&print_error ("Cannot rename $FILE to temporary file $TMP_ZFILE because $TMP_FILE or $TMP_ZFILE already exists; not uncompressing $FILE.");
+}
+}
+} else {
+local ($FORCE);
+$UNZ_FILE = $BASE;
+if ( -e $UNZ_FILE ) {
+if ( -d $UNZ_FILE ) {
+&print_warning ("Directory $UNZ_FILE already exists; not uncompressing $FILE.");
+next files;
+} elsif ((! ( -w $UNZ_FILE )) && (! $PROMPT)) {
+$FORCE = 1;
+&print_warning ("Overwriting existing file $UNZ_FILE.");
+}
+}
+if ($FORCE) {
+system (@GUNZIP_CMD, "-f", "-n", "-S", "$Z_TYPE", "$FILE");
+} else {
+system (@GUNZIP_CMD, "-n", "-S", "$Z_TYPE", "$FILE");
+}
+}
+}
+}
+}
+sub print_hope_command {
+local ($CMD) = @_;
+print "Executing the following HOPE command:\n";
+print "@HOPE_CMD $CMD";
+foreach $ARG (@HOPE_ARGS) {
+print ' ';
+if ($ARG =~ /\s/) { print "'", $ARG, "'"; }
+else { print $ARG; }
+}
+print "\n";
+}
+sub print_error {
+local ($ERR_STRING) = @_;
+print STDERR "Error: ${ERR_STRING}\n";
+}
+sub print_warning {
+local ($ERR_STRING) = @_;
+print STDERR "Warning: ${ERR_STRING}\n";
+}
+sub set_signal_handlers {
+$SIG{INT} = 'handle_abort';
+$SIG{QUIT} = 'handle_abort';
+}
+sub clear_signal_handlers {
+$SIG{INT} = 'DEFAULT';
+$SIG{QUIT} = 'DEFAULT';
+}
+sub handle_abort {
+local ($SIG_NAME) = @_;
+foreach $TS_FILE (values %DIRS) {
+if ($TS_FILE && ($TS_FILE != 1)) {
+system (@RM_CMD, "-f", "$TS_FILE");
+}
+}
+exit (0);
+}

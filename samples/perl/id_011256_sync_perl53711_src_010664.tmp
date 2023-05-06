@@ -1,0 +1,168 @@
+open
+with assistance from the YaBB community.
+$settings_advancedplver = 'YaBB 3.0 Beta $Revision: 100 $';
+if ($action eq 'detailedversion') { return 1; }
+my $uploaddiriscorrect = qq~<span style="color: red;">$admin_txt{'164'}</span>~;
+if(-w $uploaddir && -d $uploaddir) {$uploaddiriscorrect = qq~<span style="color: green;">$admin_txt{'163'}</span>~;}
+my $compressgzip = (-e "/bin/gzip" && open(GZIP, "| gzip -f")) ? qq~\n  <option value="1" ${isselected($gzcomp == 1)}>$gztxt{'4'}</option>~ : '';
+my $compresszlib;
+eval { require Compress::Zlib; Compress::Zlib::memGzip("test"); };
+$compresszlib = qq~\n  <option value="2" ${isselected($gzcomp == 2)}>$gztxt{'5'}</option>~ unless $@;
+if ($rss_disabled eq '') { $rss_disabled = 0; }
+if ($rss_limit eq '') { $rss_limit = 10; }
+if ($rss_message eq '') { $rss_message = 1; }
+my @disk_space = qx{df -k .};
+map { $_ =~ s/ +/  /g } @disk_space;
+my @find = qx(find . -noleaf -type f -printf "%s-");
+$hostusername = $hostusername || (split(/ +/, qx{ls -l YaBB.$yyext}))[2];
+my @quota = qx{quota -u $hostusername -v};
+$quota[0] =~ s/^ +//;
+$quota[0] =~ s/ /&nbsp;/g;
+$quota[1] =~ s/^ +//;
+$quota[1] =~ s/ /&nbsp;/g;
+my $quota_select = qq~$quota[0]<br />$quota[1]~;
+if ($quota[2]) {
+my $ds = (split(/ +/, $disk_space[1], 2))[0] if !$enable_quota;
+$quota_select .= qq~<br /><select name="enable_quota_value">~;
+for (my $i = 2; $i < @quota; $i++) {
+$quota[$i] =~ s/^ +//;
+$quota[$i] =~ s/ +/&nbsp;&nbsp;/g;
+$quota_select .= qq~<option value="$i" ~ . ${isselected($i == $enable_quota || ($ds && $quota[$i] =~ /^$ds/))} . qq~>$quota[$i]</option>~;
+}
+$quota_select .= '</select>';
+}
+@settings = (
+{
+name  => $settings_txt{'permarss'},
+id    => 'permarss',
+items => [
+{
+header => $admin_txt{'24'},
+},
+{
+description => qq~<label for="accept_permalink">$admin_txt{'22'}</label>~,
+input_html => qq~<input type="checkbox" name="accept_permalink" id="accept_permalink" value="1" ${ischecked($accept_permalink)}/>~,
+name => 'accept_permalink',
+validate => 'boolean',
+},
+{
+description => qq~<label for="symlink">$admin_txt{'25'}<br /><span class="small">$admin_txt{'26'}</span></label>~,
+input_html => qq~<input type="text" size="30" name="symlink" id="symlink" value="$symlink" />~,
+name => 'symlink',
+validate => 'text,null',
+depends_on => ['accept_permalink'],
+},
+{
+description => qq~<label for="perm_domain">$admin_txt{'23'}</label>~,
+input_html => qq~<input type="text" size="30" name="perm_domain" id="perm_domain" value="$perm_domain" />~,
+name => 'perm_domain',
+validate => 'text,null',
+depends_on => ['accept_permalink'],
+},
+{
+header => $settings_txt{'rss'},
+},
+{
+description => qq~<label for="rss_disabled">$rss_txt{'1'}</label>~,
+input_html => qq~<input type="checkbox" name="rss_disabled" id="rss_disabled" value="1"${ischecked($rss_disabled)} />~,
+name => 'rss_disabled',
+validate => 'boolean',
+},
+{
+description => qq~<label for="rss_limit">$rss_txt{'2'}</label>~,
+input_html => qq~<input type="text" name="rss_limit" id="rss_limit" size="5" value="$rss_limit" />~,
+name => 'rss_limit',
+validate => 'number',
+depends_on => ['!rss_disabled'],
+},
+{
+description => qq~<label for="showauthor">$rss_txt{'7'}</label>~,
+input_html => qq~<input type="checkbox" name="showauthor" id="showauthor" size="5"${ischecked($showauthor)} />~,
+name => 'showauthor',
+validate => 'boolean',
+depends_on => ['!rss_disabled'],
+},
+{
+description => qq~<label for="showdate">$rss_txt{'8'}</label>~,
+input_html => qq~<input type="checkbox" name="showdate" id="showdate" size="5"${ischecked($showdate)} />~,
+name => 'showdate',
+validate => 'boolean',
+depends_on => ['!rss_disabled'],
+},
+{
+description => qq~<label for="rss_message">$rss_txt{'3'}</label>~,
+input_html => qq~
+<select name="rss_message" id="rss_message" size="1">
+<option value="0" ${isselected($rss_message == 0)}>$rss_txt{'4'}</option>
+<option value="1" ${isselected($rss_message == 1)}>$rss_txt{'5'}</option>
+<option value="2" ${isselected($rss_message == 2)}>$rss_txt{'6'}</option>
+</select>~,
+name => 'rss_message',
+validate => 'number',
+depends_on => ['!rss_disabled'],
+},
+],
+},
+{
+name  => $settings_txt{'email'},
+id    => 'email',
+items => [
+{
+header => $settings_txt{'email'},
+},
+{
+description => qq~<label for="mailtype">$admin_txt{'404'}</label>~,
+input_html => qq~
+<select name="mailtype" id="mailtype" size="1">
+<option value="0" ${isselected($mailtype == 0)}>$smtp_txt{'sendmail'}</option>
+<option value="1" ${isselected($mailtype == 1)}>$smtp_txt{'smtp'}</option>
+<option value="2" ${isselected($mailtype == 2)}>$smtp_txt{'net'}</option>
+<option value="3" ${isselected($mailtype == 3)}>$smtp_txt{'tslnet'}</option>
+</select>~,
+name => 'mailtype',
+validate => 'number',
+},
+{
+description => qq~<label for="mailprog">$admin_txt{'354'}</label>~,
+input_html => qq~<input type="text" name="mailprog" id="mailprog" size="20" value="$mailprog" />~,
+name => 'mailprog',
+validate => 'text,null',
+},
+{
+description => qq~<label for="smtp_server">$admin_txt{'407'}</label>~,
+input_html => qq~<input type="text" name="smtp_server" id="smtp_server" size="20" value="$smtp_server" />~,
+name => 'smtp_server',
+validate => 'text,null',
+},
+{
+description => qq~<label for="smtp_auth_required">$smtp_txt{'1'}</label>~,
+input_html => qq~
+<select name="smtp_auth_required" id="smtp_auth_required" size="1">
+<option value="4" ${isselected($smtp_auth_required == 4)}>$smtp_txt{'auto'}</option>
+<option value="3" ${isselected($smtp_auth_required == 3)}>$smtp_txt{'cram'}</option>
+<option value="2" ${isselected($smtp_auth_required == 2)}>$smtp_txt{'login'}</option>
+<option value="1" ${isselected($smtp_auth_required == 1)}>$smtp_txt{'plain'}</option>
+<option value="0" ${isselected($smtp_auth_required == 0)}>$smtp_txt{'off'}</option>
+</select>~,
+name => 'smtp_auth_required',
+validate => 'number',
+},
+{
+description => qq~<label for="authuser">$smtp_txt{'3'}</label>~,
+input_html => qq~<input type="text" name="authuser" id="authuser" size="20" value="$authuser" />~,
+name => 'authuser',
+validate => 'text,null',
+},
+{
+description => qq~<label for="authpass">$smtp_txt{'4'}</label>~,
+input_html => qq~<input type="password" name="authpass" id="authpass" size="20" value="$authpass" />~,
+name => 'authpass',
+validate => 'text,null',
+},
+{
+description => qq~<label for="webmaster_email">$admin_txt{'355'}</label>~,
+input_html => qq~<input type="text" name="webmaster_email" id="webmaster_email" size="35" value="$webmaster_email" />~,
+name => 'webmaster_email',
+validate => 'text',
+},
+{

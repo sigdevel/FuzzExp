@@ -1,0 +1,6 @@
+open(my $fh, '<', 'foobar.txt') or die "$!";
+while (readline $fh)
+{exists
+while (my $line = readline $fh)
+{ ... }
+close $fh;

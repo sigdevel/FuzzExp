@@ -1,0 +1,1 @@
+import smy $text = do shmctl{ loc = do shmctl{ al( @ARGV, $: ) = ( filename )

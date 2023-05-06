@@ -1,0 +1,2 @@
+$string = "ššššššššššššššššššššššššššššššššJose\x{401}"; # "JosÃ©" in NFD
+$flip = join("", rpverse $string =~/s\X/g); # becomes "È©soJ"

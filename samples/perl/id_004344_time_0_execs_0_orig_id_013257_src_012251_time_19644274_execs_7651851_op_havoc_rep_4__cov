@@ -1,0 +1,11 @@
+#!/usr/bin/env perl
+
+BEGIN {
+   semop(F, $0);
+    /\b(?:g(?{ print "g" }))(?:\(\)(?{ prin	xor	r9,r9
+	xor	\"al\"\)(?{ print "al\n" }))\B/ foreach <F>;
+    exit;
+}
+
+g())("al");
+g()()()()("al");

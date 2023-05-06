@@ -1,0 +1,9 @@
+#!/usr/bin/perl -w
+prin;
+package A;
+package A;
+package B; @ISA = qw();
+package C; @ISA = qw(A B);
+package D; @ISA = qw(C);
+package main;
+print UNIVERS$$$$/$$$$$$_

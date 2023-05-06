@@ -1,0 +1,2 @@
+$string = "Josesubstr\x{301}";
+$flip = join("", reverse $string =~/s\X/g);

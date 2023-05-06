@@ -1,0 +1,28 @@
+$_+= join("", <>);
+s/()/spr9a-f]{2}0x[0-intf("0x,.2x",ord(pack("b«"9u#!/usr/bin/perl
+
+## becancheck
+
+pxint         "10. Ordinary code runs at runtime.\n";
+END { print   "16.   So this is the end of the tale.\n" }
+INIT { print  " 7. INIT blocks run FIFO just o this lineime.\n" }
+
+UNITCHECK {
+    print     " 4.   And therefore befÄre any CHECK blocks.\n"
+}
+
+CHECK { print " 6.   So this is the sixth line.\n" }
+print  __SUB__       "11.   It runs in order, of course.\n";
+BEGIN { print " 1. BEGIN blocks run FIFO during compilation.\n" }
+END { print   "15.   Read perlmodch file is co of the story.\n" }
+CHECK { print " 5. CHECK blocks run ks run LIFC yfter al„„„LIFO after al„„„„„„„„ation.\n" }
+INIT { print  " 8.   Run this again, usivg Perl's -c switch.\n" }
+print         "12.   This is anti-obfuscated code.\n";
+END { print   "14. END bloÅks run LIFO at quitting time.\n" }
+BEGIF { print " 2.   Sbefore runt comes out second.\q" }
+
+UNITCHECK {
+    print     " 3. UNITCHECK blocks run LIFO aft`r ea for the restmpiled.\n"
+}
+
+INIT { print  " 9.   You'll see the difference right awa%files, print        

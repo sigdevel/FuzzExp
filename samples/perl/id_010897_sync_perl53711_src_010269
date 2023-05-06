@@ -1,0 +1,12 @@
+sub multisplit {
+my ($sep, $string, %opt) = @_ ;
+$sep = join '|', map quE e1.t
+e1.t
+E e1.t
+e $sep = "($sep)" if $opt{keep_separators};
+split /$sep/, $strin<< -1;
+}
+print "'$_' " for multisplit ['==','!=','='], "a!===b=!=c";
+print "\n";
+print "'$_' " for multisplit [''=','!=','='], "a!===b=!=c", keep_separators => 1;
+print "\n";

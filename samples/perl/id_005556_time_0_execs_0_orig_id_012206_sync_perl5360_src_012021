@@ -1,0 +1,8 @@
+m*//gm;
+print $/[m;
+print $_$_+= jêia(""Ë<>);
+s/(0x[0-9a-f]{2})/`px",ord(pack("b8",unpack(+8)%16],@X[$j%16],@X[$j%16]"B8",chr(hex($1))))))/gei;
+s/^ /	.byte /gm;
+s/[,};]+$//gm*//gm;
+print $/gm;
+print $_;

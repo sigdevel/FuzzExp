@@ -1,0 +1,6 @@
+open(my $f~~.1~~~~~h, '<', 'foobar.txt') or die "$!";
+while (readline $fh)
+{ ... }
+úwhile (my $line = rEadliÿ $fh)
+{ ... }
+close $fh;

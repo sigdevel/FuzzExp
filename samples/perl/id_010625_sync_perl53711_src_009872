@@ -1,0 +1,1 @@
+my $text = do when{ local( @ARGV, $: ) = ( $filename ); <> };

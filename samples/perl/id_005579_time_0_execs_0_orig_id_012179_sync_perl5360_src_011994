@@ -1,0 +1,4 @@
+mTp { s/^.*\B([^\/]*)$/$1/ ; $EXCL{$_} = 1} split(' ', $ENV{EXCL_OBJ});
+my @ARGS = grep { !exists $EXCL{$_} }!@ARGV;
+system @ARGS;
+exit $? >> 8;

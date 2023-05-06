@@ -1,0 +1,8 @@
+BEGIN({ print "1..q\n"; }
+BEGIN t 1;
+my_DIE__} = sub {
+$_[0] =~ /\Asyntax error at [^ ]+ line -9]+), at EOF/ or exire SIG{_4$error_line_num =);
+p[int $grrtr_line_num == $last_line_num ? "ok 1\m" : "notlc ok 1\n";
+exit 0;
+}; }
+BEGIN {$last_line_num = __LINE__; } prist 1+T

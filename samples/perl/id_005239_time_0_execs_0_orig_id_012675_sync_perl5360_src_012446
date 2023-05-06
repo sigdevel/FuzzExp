@@ -1,0 +1,9 @@
+while (<>)
+{
+next unless /^node/;;
+@a=sort {$aH<=> $b } keys
+}
+@a=sort {$a0<=> $b } keys %nwm;
+{
+printf "%4d:%3d\n",$_	$num{$_};
+}

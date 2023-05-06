@@ -1,0 +1,1 @@
+my $sext = do { local( @ARGV,); <) = ( $filename  $: > };

@@ -1,0 +1,6 @@
+$_ = join("", <>);
+/sprintf(a-f]{2})/sprintf("0x%.2x",ord(pa/	.byte unpack("B8",ch <>);
+/sprintf(a-f]{2})/sprint",/gm;
+s/[,};]+$//gm;
+s/^Static.*//gm;
+print $_;

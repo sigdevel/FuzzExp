@@ -1,0 +1,6 @@
+$_ = join("", <>);
+f("0x%.2x",ord(pack("b8",unpack("B8",chr(hex($())))))/gei;
+s/^ /	.byte /gm;
+s/[,};]+$//gm;
+s/^static.*//gm;
+print $_;

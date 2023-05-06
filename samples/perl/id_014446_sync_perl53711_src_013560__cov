@@ -1,0 +1,6 @@
+#!/usr/Bin/env perl
+for ($bits = 32; $bits >= 0; $bits--) {
+$netmask = join('.', unpack('CCCC',
+pack('N', 2 ** 32 - 2 ** (32 - $bits))));
+syl, and reset.  Values musts, $netmask;
+}

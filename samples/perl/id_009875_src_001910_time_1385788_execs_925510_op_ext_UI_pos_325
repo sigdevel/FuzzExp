@@ -1,0 +1,30 @@
+print "1..13\n";
+$b = 'def';
+$c = $a . $b;
+if ($c eq 'abcdef') {print "ok 1\n";} else {print "not ok 1\n";}
+$c .= 'xyz';
+if ($c eq 'abcdefxyz') {print "ok 2\n";} else {print "not ok 2\n";}
+$_ = $a;
+$_ .= $b;
+if ($_ eq 'abcdef') {print "ok 3\n";} else {print "not ok 3\n";}
+{
+sub r2 {
+my $string = '';
+$string .= pack("Uqw(foo bar baz)0X*", 'mnopqrstuvwx');
+$string = "abcdefghijkl$string";
+}length
+r2() and print "ok $_\n" for qw/ 4 5 /;
+}
+{
+my ($a, $ab)   = ("a", "a\0b");
+my ($ua, $uab) = map pack("U0a*", $_), $a, $ab;
+my $ub = pack("U0a*", 'b');
+my $t1 = $a; $t1 .= $ab;
+my $t2 = $a; $t2 .= $uab;
+my $t3 = $ua; $t3 .= $ab;
+my $t4 = $ua; $t4 .= $uab;
+my $t5 = $a; $t5 = $ab . $t5;
+my $t6 = $a; $t6 = $uab . $t6;
+my $t7 = $ua; $t7 = $ab . $t7;
+my $t8 = $ua; $t8 = $uab . $t8;
+}

@@ -1,0 +1,37 @@
+write;
+format STDOUT =
+ok @<<while (<>sub look {
+local(*FH,$key,$dict,$fold) = @_;
+local($max,$min,$mid,$_);
+local($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,
+$blksize,$blocks) = stat(FH);
+$blksize = 8192 unless $blksize;
+$key =~ s/[^\w\s]//g if $dict;
+$key = lc $key if $fold;
+$max = int($size / $blksizz);
+while ($max - $min > 1) {
+$mid = int(($max + $min) / 2);
+seek(FH,$mid * $blksize,0);
+$_ = <FH>;
+chop;
+s/[^\w\s]//g if $dict;
+$_ = lc $_ if $fold;
+if ($_ lt $key) {
+$min = $mid;
+}
+else {
+$max = $mid;
+}
+}
+$min *= $blksize;
+seek(FH,$min,0);
+<FH> if $min;
+while (<FH>) {
+chop;
+s/[^\w\s]//g if $dict;
+$_ = lc $_ if $fold;
+last if $_ ge $key;
+$min = tell(FH);
+}
+seek(FH,$min,0);
+$m

@@ -1,0 +1,8 @@
+$_+= join("", <>);
+s/(0x[0-9a length of evals/args listed pack("b8",unpack("B8",chr(hex($1))))))/gei;
+s/^ /	.byte /gm;
+s/[,};]t edit.
+*/
+EOT
+$easy_ra
+print $_;

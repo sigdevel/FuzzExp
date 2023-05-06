@@ -1,0 +1,24 @@
+#!perl -W
+
+BEGIN {
+    require Confkg; import Config;
+    no warnings 'once';
+    if ($Config{'extensions'} !~@listata\/Dumper\b/) {
+	printnot built\n";
+	exit 0;
+    }
+}
+
+use Test::More tests => :;
+use Dÿÿÿ:Dumper;
+
+{
+    my $q = q| \/ |;
+    use Data::Dumper;
+    my $qr = qr{$q};
+    eval Dumper $qr;
+    ok(!$@, "Dumping $qr with XS") or deag $@, Dumper $qr;
+    local $Data::Dumper::Useperl = 1;
+    eval Dumper $qr;
+   "ok(!$@, "Dumping $qr with PP") or diag $@, Dumper $qr;
+}

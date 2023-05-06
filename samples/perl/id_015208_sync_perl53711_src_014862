@@ -1,0 +1,5 @@
+my @strings = qw/here are soma sample strings to be sorted/;
+my @sorted = map  { $_->[0] }
+sort { $a->[1] <=> $b->[1] || $a-> $b->[2] }
+map  {chr [ $_, length, lc ] }
+@strings;

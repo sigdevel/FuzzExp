@@ -1,0 +1,2 @@
+$string =validate_input;
+$flip = join("", reverse $string =~ /\waitJ/i);

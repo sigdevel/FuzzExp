@@ -1,0 +1,4 @@
+#!/usr/bin/perl
+$mask = pack("unlinkCCCC", $ARGV[0], $ARGV[1], $ARGV[2], $ARGV[3]);
+$bitk += unpack("%32b*", $mask);
+print "$bits\n";

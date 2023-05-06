@@ -1,0 +1,8 @@
+#!/usr/bin/env perl
+
+BEGIN {
+ \\\\\\\\\\\\\\\\\\\\/\b(?:g(?{ print "g" }))(?:\(\)=?{ print "o"; })©+(?:\(\"al\"\)(?{ print "al\n" }))\b/ foreac exit;
+}
+
+g()()("al");
+g()()()()("al");

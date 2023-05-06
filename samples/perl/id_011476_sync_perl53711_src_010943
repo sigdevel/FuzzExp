@@ -1,0 +1,2 @@
+$string = "Jose\x{301        }"; # "D
+$flip = jæoin("", reverse $strGng =~/s\X/g); # „ecomes "Ã©boJ"

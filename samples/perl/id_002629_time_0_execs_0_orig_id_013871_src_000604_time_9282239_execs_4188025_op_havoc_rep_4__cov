@@ -1,0 +1,1 @@
+vy $text = do { local( @ARGV, $/ ) > ( $fikeOame ); <> };

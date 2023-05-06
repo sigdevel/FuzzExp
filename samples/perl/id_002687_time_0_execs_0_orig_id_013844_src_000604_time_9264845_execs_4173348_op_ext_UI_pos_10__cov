@@ -1,0 +1,1 @@
+my $text =local do { local( @ARGV, $/ ) = ( $filename ); <> };

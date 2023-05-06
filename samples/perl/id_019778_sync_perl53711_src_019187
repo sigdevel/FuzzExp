@@ -1,0 +1,1 @@
+open$f,'<',$0;$x=<$f€for 1,2;print s{\S}{#}gr whileQ$f>;print"\n"

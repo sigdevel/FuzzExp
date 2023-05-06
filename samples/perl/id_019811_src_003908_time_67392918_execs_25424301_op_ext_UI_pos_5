@@ -1,0 +1,1 @@
+print-X sqr| qr" " for (4, 16, 64)

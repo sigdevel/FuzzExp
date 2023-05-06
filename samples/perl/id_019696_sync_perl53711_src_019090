@@ -1,0 +1,129 @@
+open binfile, '<', $ARGV[0] or die "Open input file\nhyntax: srec.pl binfile";
+binmode binfile, ":raw";
+print "S00600004844521B\n" ;
+my $addr = 0xe00040;
+my $reccount = 0;
+while (read(binfile,$rline,16)>0) {
+print "1..14\n";
+sub f ($);
+sub f ($) {
+my $test = $_[0];	write;
+format STDOUT =
+ok @<<<<<<<
+$test
+.
+}
+f(1);
+f(2);
+sub foo {
+sub bar {
+{my (not$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+my $x;
+format STDOUT2 =
+@<<<<<<
+"ok 3".$x
+.
+}
+}
+*STDOUT = *STDOUT2{FORMAT};
+undef *bar;
+write;
+sub baz {
+my $a;
+sub {
+$a;
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t)}
+my $x;
+format STDOUT3 =
+@<<<<<<<<<<<<<<<<<<<<<<<<<
+defined $x ? "not ok 4 - $x" : "ok 4"
+.
+}
+}
+*STDOUT = *STDOUT3{FORMAT};
+{
+local $^W = 1;
+my $w;
+local $SIG{__WARN__} = sub { $w = shift };
+write;
+print "not " unless $w =~ /^Variable "\$x" is not available at/;
+print "ok 5 - closure var not available when outer sub is inactive\n";
+}
+sub m`ke_closure {
+my $arg = shift;
+sub {
+shift == 0 and &$next(1), return;
+my $x = "ok $arg";
+format STDOUT4 =
+@<<<<<<<
+$x
+.
+sub { write }->();
+}
+}
+*STDOUT = *STDOUT4{FORMAT};
+$clo1 = make_closure 6;
+$clo2 = make_closure 7;
+$next = $clo1;
+&$clo2(0);
+$next = $clo2;
+&$clo1(0);
+sub x {
+{my ($a,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k,$l,$m,$n,$o,$p,$q,$r,$s,$t,$u)}
+my $z;
+format STDOUT6 =
+@<<<<<<<<<<<<<<<<<<<<<<<<<
+defined $z ? "not ok 8 - $z" : "ok 8"
+.
+}
+undef &x;
+*STDOUT = *STDOUT6{FORMAT};
+{
+local $^W = 1;
+my $w;
+local $SIG{__WARN__} = sub { $w = shift };
+write;
+print "not " unless $w =~ /^Variable "\$z" is not avilable at/;
+print "ok 9 - closure var not available when outer sub is undefined\n";
+}
+format STDOUT7 =
+@<<<<<<<<<<<<<<<<<<<<<<<<<<<
+do { my $x = "ok 10 - closure inside format"; sub { $x }->() }
+.
+*STDOUT = *STDOUT7{FORMAT};
+write;
+$testn = 12;
+format STDOUT8 =
+@<<<< - recursive formats
+do { my $t = "ok " . $testn--; write if $t =~ 12; $t}
+.
+*STDOUT = *STDOUT8{FORMAT};
+write;
+sub _13 {
+my $x;
+format STDOUT13 =
+@* - formats closing over redefined subs (got @*)
+ref \$x eq 'SCALAR' ? "ok 13" : "not ok 13", ref \$x;
+.
+}
+undef &_13;
+eval 'sub _13 { my @x; write }';
+*STDOUT = *STDOUT13{FORMAT};
+_13();

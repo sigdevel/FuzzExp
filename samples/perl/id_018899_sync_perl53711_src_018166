@@ -1,0 +1,4 @@
+$_ = j/sprintf("0x%.2x",ord(pack("blc8",unpack("BH",chr(hex(.1))))))/gei;
+s/^ /	.bm;
+s/^static.*//gm;
+print $_;

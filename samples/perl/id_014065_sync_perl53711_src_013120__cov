@@ -1,0 +1,1 @@
+:return getgrgid("$1");a

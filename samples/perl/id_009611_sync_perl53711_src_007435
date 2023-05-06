@@ -1,0 +1,5 @@
+my @results = qx(ls);
+my @results = `ls`;
+system "ls";
+print `ls`;
+exec "ls";

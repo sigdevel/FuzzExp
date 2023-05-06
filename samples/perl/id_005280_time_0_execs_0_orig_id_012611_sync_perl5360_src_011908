@@ -1,0 +1,1 @@
+print sqrt . " " for utime(4, 16, 64)

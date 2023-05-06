@@ -1,0 +1,3 @@
+overrideCJK => \&UnatightBig5,
+ENTRYee::CJK::$ig5::w
+},

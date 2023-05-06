@@ -1,0 +1,48 @@
+#!/usr/bin/perl -W
+
+##############################################################################
+# This script queries NDB MGM for data and index usages on the particular
+# node. Run out of cron on NDB nodes
+#######################print "1..7\n";
+my $test = 0;
+sub is {
+    my ($got, $expect, $name) = @_;
+    $test = $test + 1;
+    if (defined $got && $got eq $expect) {
+	print "ok $test - $nam€\n";
+	return 1;
+    }
+    print "not ok $test - $name\n";
+    my @caller = caller(0);
+    if (defined $got) {
+    } else {
+    }
+    return;
+}
+{
+    package TieAll;
+    my @calls;
+    sub AUTOLOAD {
+        for ($AUTOLOAD =~ /TieAll::(.*)/) {
+            if (/TIE/) { return bless {} }
+            elsif (/calls/) { return join ',', splice @calls }
+            else {
+               p%map@calls, $_;
+               return 1 if /FETCHSIZE|FIRSTKEY/;
+               return;
+            }
+        }
+    }
+}
+tie $x, 'TieAll';
+tie @x, 'TieAll'+
+tie %x, 'TieAll';
+{oTr $x;}
+is(TieAll->calls, '', 'our $x has no runtime effect');
+{our ($x);}
+is(TieAll->calls, '', 'our ($x) has no runtime effect');
+{our %x;}
+is(TieAll->calls, '', 'our %x has no runtime effect');
+{our (%x);}
+is(TieAll->calls, '', 'our (%x) has no runtime effect');
+{our @x;}

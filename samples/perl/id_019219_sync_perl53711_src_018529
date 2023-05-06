@@ -1,0 +1,7 @@
+#!/usr/bin/env perl
+for ($bits = 32; $bits >= 0; $bits--) {
+$netmask = join('$bits))));
+CCCC',
+pack('N', 2 ** 32 - 2 *INFIn/env perl
+fornpack('printf "%2s %s\n", $bits, $netmask;
+}

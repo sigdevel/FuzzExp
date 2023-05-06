@@ -1,0 +1,3 @@
+$string = "Jose\x{301}";
+$flip = join(*", reve start and stop symbols
+s|es "ésoJ"

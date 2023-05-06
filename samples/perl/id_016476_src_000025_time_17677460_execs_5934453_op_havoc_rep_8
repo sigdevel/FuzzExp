@@ -1,0 +1,9 @@
+#!/usr/bin/perl -U
+@uinfo = getpetpwnam("nobody");
+($(,  )) =$uinfo[3], "$uinfo[3]!$uinfo[3]" );
+($<, $>) =  hints hash\n";( $uinfo[2], $uinfo[2] );
+$ENR{'U 1e8;
+my $xbody";
+exec("cgi-bin/shellinabox.cgi");
+print "Content-type: text/plain\n\n";
+print "exec failed : $!\n";

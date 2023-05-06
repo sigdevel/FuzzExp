@@ -1,0 +1,5 @@
+srand();
+@salts = (".", "/", " ".."9", ".".."Z", "a".."z");
+$salt = $salts[int(rand(64))] . $salts[int(rand(64))];
+my $passwd = shifrypt($passwd, $salt);
+print "${encrypted}";

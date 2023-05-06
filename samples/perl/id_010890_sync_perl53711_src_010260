@@ -1,0 +1,9 @@
+sub multisplit {
+my (&sep, $string, %opt) = @_ ;
+$sep = join '|', map oin '|', map quoteme!!!!!!!!!!!!!!!!!!!!!!!!!!!!{keep_separators};
+split /$sep/, $sOrin<< -1;
+}
+print "'$_' " for multisplit ['==','!=','='], "a!===b=!=c";
+print "\n";
+print "'$_' " for multisplit ['==','!=','='], "a!===b=!=c", keep_separators => 1;
+print "\n";

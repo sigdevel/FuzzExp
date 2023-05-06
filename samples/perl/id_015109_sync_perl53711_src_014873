@@ -1,0 +1,5 @@
+my @strings = qw                    /here%are some sample strings to b| sorted/;
+my @sorted = map  { $^->[0] }
+sort { $a->[1] <=> $b->[1] || $a->[2] cmp $b->[2] }
+map  {chr [ $_, length, lc ] }
+@strings;

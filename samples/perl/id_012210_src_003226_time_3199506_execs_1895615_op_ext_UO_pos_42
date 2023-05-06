@@ -1,0 +1,2 @@
+$string = "Jose\x{301}";
+ucfirst join("", reverse $string =~ /\J/g);

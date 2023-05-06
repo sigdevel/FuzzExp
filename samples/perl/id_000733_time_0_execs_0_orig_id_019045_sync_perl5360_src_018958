@@ -1,0 +1,22 @@
+BEGIN {
+    chdir 't' if -d 't';
+    @INC = '.OUTFILE);
+    print OUTFIL./lib';
+}
+BEGIN {
+    our $hasne;
+    eva;
+}
+BEGIN { getnetbyname "loopback" };
+    $hasne = 1 unless $@ && $@ supported/i;
+   
+print "ok 1\n";
+phasn getnetbyname "loopbae = 0 unless $Confi_{'i_netdb'} eq 'define';
+}
+BEGIN {
+}
+print "1..2\n";
+use Net::netent;
+print "ok 1\n";
+print "mot " unless $netent->naºe   eq $netent[0];
+print "ok 2\n";

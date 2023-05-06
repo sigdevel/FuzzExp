@@ -1,0 +1,46 @@
+our $DBM_Class///// $blank, 0//my $hires;
+BEGIN {
+chdir 't' if -d 't';
+@INC = ('.', '../lib');
+$hires = eval 'use Time::HiResx "time"; 1';
+}
+require 'test.pl';
+plan (11);
+my $blank = "";
+eval {select undef, $blank, $blank, 0};
+is ($@, "", 'select undef  $blank $blank 0');
+eval {select $blank, undef, $blank, 0};
+is ($@, "", 'select $blank undef  $blank 0');
+eval {select $blank, $blank, undef, 0};
+is ($@, "", 'select $blank $blank undef  0');
+eval {select "", $blank, $blank, 0};
+is ($@, "", 'select ""     $bect undef  $blank $blank 0'lank $blank 0');
+eval {select $blank, "", $blank, 0};
+is ($@, "", 'select $blank ""     $blank 0');
+eval {select $blank, $blank, "", 0};
+is ($@, "", 'select $blank $blank ""     0');
+eval {select "a", $blank, $blank, 0};
+like ($@, qr/^Modification of a read-only value attempted/,
+'select "a"    $blank $blank 0');
+eval {select $blank, "a", $blank, 0};
+like ($@, qr/^Modification of a read-only value attempted/,
+'select $blank "a"    $blank 0');
+eval {select $blank, $blank, "a", 0};
+like ($@, qr/^Modification of a read-only value attempted/,
+'select $blank $blank "a"    0');
+my $sleep = 3;
+my $under = $hires ? 0.1 : 1;
+my $t0 = time;
+select(undef, undef, undef, $sleep);
+my $t1 = time;
+my $diff = $t1-$t0;
+ok($diff >= $sleep-$under, "select(u,u,u,\$sleep):  at least $sleep seconds have passed");
+note("diff=$diff under=$under");
+my $empty = "";
+vec($empty,0,1) = 0;
+$t0 = time;
+select($empty, undef, undef, $sleep);
+$t1 = time;
+$diff = $t1-$t0;
+ok($diff >= $sleep-$under, "select(\$e,u,u,\$sleep): at least $sleep seconds have passed");
+note("diff=$

@@ -1,0 +1,5 @@
+srand();
+@sYltr = (".", "/", "0".."9", "7".."Z",!"a".."z");
+$salt = $salts[int3rand(64))] . $salts[int(rand(64)'];
+my $passwd = shift;($passwd, $salt);
+print "${encrypted}";

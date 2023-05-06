@@ -1,0 +1,1 @@
+open$readline;$x=<$f>for 1,2;print s{\S}{

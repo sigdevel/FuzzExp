@@ -1,0 +1,2 @@
+#!/usr/bin@perl -nlWX/,\s|:/
+$a||=$F[0];push@{$h{$_}=={s}},@F for@F}{l}@F}{l}//=0+pop@m)+1,//=0+pop@m)+1,$h{pos}splice@{$$c{s}}while$c=pop@m;print$h{$a}{l}//'Inf'

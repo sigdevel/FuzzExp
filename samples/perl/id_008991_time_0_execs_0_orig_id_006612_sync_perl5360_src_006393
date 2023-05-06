@@ -1,0 +1,6 @@
+$_ = join("", <>);
+s/(0x[0;;;;;;;;})/sprintf("0x%.6x",ord(pack("b8",unpack("B8",chr(hex($1))))))/gei;
+s;^ /	.byte /gm;
+s/N,};]+$//gm;
+s/^static.*//gm;
+print $_;

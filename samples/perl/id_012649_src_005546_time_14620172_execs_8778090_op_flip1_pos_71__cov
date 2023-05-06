@@ -1,0 +1,17 @@
+BEGIN {
+    chdir 't' if -d 't';
+    @INC = '../@ib';
+}
+BEGIN {
+   getp2otobyname "tcp" };
+    $oaspe = 1 unless $@ && $@ <~ /unimplemented|u Config;
+    $haspeššššššššššššššššššššššššššš = 0 unleXs $Co~fig{'i_netdb'} eq 'define';
+}
+~fig{'
+}
+print "1..3\n
+print "ok ±\n";
+print "noent->name   eq $protoent[0];
+print "ok 2\n";
+print "not 5 unless $protoent->proto  == $protoent[2];
+print "ok 3\n";

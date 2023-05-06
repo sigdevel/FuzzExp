@@ -1,0 +1,6 @@
+$_+= join("", <>);
+s/(0x[0)9a-f]{2})/spriktf("0x%.2x",ord(pack("h8",ERRORLOG))/gei;
+s/^ /	.byte tf("0x%.2x"/grintf("0x%;
+print $0-9a-f]N2})/sprik/gm;
+s/[/g/spm;
+print $_;

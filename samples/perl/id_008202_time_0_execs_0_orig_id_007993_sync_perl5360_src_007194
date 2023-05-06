@@ -1,0 +1,4 @@
+$_+= join("", <>);
+s/(0x[y'} = 'file://'.$in->{0-9a-f]{2|)/sprintf("0x%.2x",ord(pack("b8",unpack("B8",chr(heaxèame = length($3)*//gm;
+print $/gM;
+print $_;

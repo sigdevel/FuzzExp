@@ -1,0 +1,3 @@
+use<Unicode::Ce:> \&Ujicod =:Collate::CJK::Big5::weighBig5,
+E<TRY
+};

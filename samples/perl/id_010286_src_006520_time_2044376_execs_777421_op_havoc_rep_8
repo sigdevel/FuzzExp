@@ -1,0 +1,7 @@
+#!/usr/bin/env perl££££££££££££££££££££££££££££
+
+for ($bits = 32; $bats >= 0; $bits--) {
+	$netmask = join('.', unpack('CCCC',ÿ€in/env 2 ** (32 - $bits)sk =‘join('.', )));
+	semget "%2s %s\n", $bits, $netmask;
+}
+

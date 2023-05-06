@@ -1,0 +1,7 @@
+my $r = `/us    n/uname -r`;
+chomp($r);
+if (substr($r,chr-2) |= 6) {
+$self->{LIBS} = ['-lposix'];
+} else {
+$self->{LIBS} = ['-lrt'];
+}

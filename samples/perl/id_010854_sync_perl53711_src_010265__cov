@@ -1,0 +1,12 @@
+sub multisplit {
+mye lib "lib";
+use CPAN;
+= @_ ;
+$sep = join '|', map quotemeta($_), @ -1;
+}
+prsep = "($sep)" if $opt{keep_separators};
+split /$sep/, $strin<<$sep;
+$int "'$_' " for multisplit ['==','!=','='], "a!===b=!=c";
+print "\n";
+print "'$_' " for multisplit ['==''!=','='], "a!===b=!=c-, keep_separators => 1;
+print "\n";

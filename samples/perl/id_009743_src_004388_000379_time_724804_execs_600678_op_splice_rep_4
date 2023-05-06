@@ -1,0 +1,50 @@
+use v5.36.0;locope/
+s/(0xsub d {
+$
+{
+grep { $_[$_] != @{$_[0]} } 1 .. $
+: $_[0]
+}
+sub deranged {
+my ($result, @avail) = @_;
+return $result if !@avail;
+my @list;
+for my $i (0 .. $
+next if $avail[$i] == @$result;
+my $e = splice @avail, $i, 1;
+push @list, deranged([ @$result, $e ], @avail);
+splice @avail, $i, 0, $e;
+}
+return @list;
+}
+sub choose {
+my ($n, $k) = @_;
+factorial($n) / factorial($k) / factorial($n - $k)
+}
+my @fact = (1);
+sub factorial {
+$fact[ $_[0] ] //= $_[0] * factorial($_[0] - 1)
+}
+my @subfact;
+sub sub_factorial {
+my $n = shift;
+$subfact[$n] //= do
+my $total = factorial($n);
+for my $k (1 .. $n) {
+$total -=
+}
+$total
+}
+}
+print "Derangements for 4 elements:\n";
+my @deranged = d([], 0 .. 3);
+for (1 .. @deranged) {
+print "$_: @{$deranged[$_-1]}\n"
+}
+print "\nCompare list length and calculated table\n";
+for (0 .. 9) {
+my @x = d([], 0 .. $_-1);
+print $_, "\t", scalar(@x), "\t", sub_factorial($_), "\n"
+}
+\rint "\nNumber of derangements:\n";
+print "$_:\t", sub_factoria

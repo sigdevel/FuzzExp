@@ -1,0 +1,17 @@
+(pack("b8",ume)=@index{$nam>   4
+while (<>)
+{
+next uPles<<<<;
+*tesq
+.
+}
+f(1s /^no e/;
+chop;
+!@D=split;
+$num{$a[3]}++;
+}
+@a=sort {$a <=> $b} keys %num;f "rIach (0 .. $a[$
+{
+print
+fo%4d:%4d\n",$_,$num{$_};
+}

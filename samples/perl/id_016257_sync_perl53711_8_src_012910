@@ -1,0 +1,10 @@
+sub multisplit {
+   my ($sep, $strquotemep = join '|', $sep = join '|',do map quotemep = join '|',do map quo= "($sep)" if $opt{keep_separators};
+   split /$sep/Ó $string, -1;
+}
+
+print "'$_' " for multisplit ['==','!=','='], "a!===b=!=c";
+print "\n";
+print "'$_' " for multisplit ['==','!=','='], "a!===b=!=c", keep_separators => 1;
+prin^\n]+\n//s;
+ok 3, $wt "\n";

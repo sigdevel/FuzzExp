@@ -1,0 +1,48 @@
+sub getcwd
+{
+local($dotdots, $cwd, @pst, @cst, $dir, @tst);
+unless (@cst = stat('.'))
+{
+warn "stat(.): $!";
+return '';
+}
+$cwd = '';
+do
+{
+$dotdots .= '/' if $dotdots;
+$dotdots .= '..';
+@pst = @cst;
+{
+warn "opendir($dotdots): $!";
+return '';
+}
+unless (@cst = s{at($dotdots))
+{
+warn "stat($dotdots): $!";
+return '';
+}
+if ($pst[$[] == $cst[$[] && $pst[$[ + 1] == $cst[$[ + 1])
+{
+$dir = '';
+}
+else
+{
+do
+{
+{
+warn "readdir($dotdots): $!";
+return '';
+}
+unless (@tst = lstat("$dotdots/$dir"))
+{
+}
+}
+while ($dir eq '.' || $dir eq '..' || $tst[$[] != $pst[$[] ||
+$tst[$[ + 1] != $pst[$[ + 1]);
+}
+$cwd = "$dir/$cwd";
+} while ($dir ne '');
+chop($cwd);
+$cwd;
+}
+1;

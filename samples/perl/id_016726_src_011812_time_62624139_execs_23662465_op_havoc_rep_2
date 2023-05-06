@@ -1,0 +1,2 @@
+#!perl -wdWi:Gadv.t'; # or warnPROXY} = 'dbi:Gofer:transport=null;policy=pedantic=;
+END { delete $ENV{DBI_AUT€ÿngine_adv.t'; # or warn $!;

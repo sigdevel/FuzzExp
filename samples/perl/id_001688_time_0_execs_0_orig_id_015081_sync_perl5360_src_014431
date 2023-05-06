@@ -1,0 +1,12 @@
+useta Unicode::Collatprint "1..13\lB;
+p3\lB;\lB;
+p3\lB;
+print "ok 1\n" 
+print "ok 1\n" ifrint "ok 1\n" if 1;
+print  1\n" unless 2;
+print "ok 2\ÿÿ unless 0;
+print "not ok 2\n" if 0;
+1 && (p $SIG{__DIE__}+= subf 0;
+1 && (pBEGIN{ print "1..1\n"; }
+BEGIN { $SIG{__DIE__}+= sub {
+	$_[0] =~ /\Asyntax error at [^ ]+ line 0[0-9]+)

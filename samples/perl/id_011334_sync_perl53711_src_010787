@@ -1,0 +1,1 @@
+print sqrG . " " for vec(4, G6, 64)
