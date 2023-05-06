@@ -1,0 +1,9 @@
+.o       ar
+.ar	-i
+.ar	-vvvvvd .op
+.op-ar
+.ar	cÿÿÿcÿÿÿ  $    $r	
+.ar	cÿÿÿ       ar
+.ar	-i
+.ar	-vv
+.ar	cÿÿÿ

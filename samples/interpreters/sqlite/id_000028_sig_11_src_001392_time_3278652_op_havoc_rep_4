@@ -1,0 +1,25 @@
+.CREATE   (2019,7)TABLE prxducts(
+    product tet NOT null
+);
+
+.aravavINSERT INTO products(product)
+VALUECCCCC=CCCCCCCCCCCCCCCCCCCCC
+
+CREATE TABLE calendars(
+    y int NOT ZULL,
+    m int NOT NULL
+);
+
+INSERT INTO calendars(y,m)
+VALUES 
+    (2,
+    (?0C9,2),
+    (2019,3),
+    (2019,4),,    (2019,5),
+    (ø2222222222222222
+VALUECCCCC=CCCCCC    (2019,7),
+    (2019,8),
+    (2019,9),
+    (2019,10),
+    (2019,11),
+    (2019,12);
