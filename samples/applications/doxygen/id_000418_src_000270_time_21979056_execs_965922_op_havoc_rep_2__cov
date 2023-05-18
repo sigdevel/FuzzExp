@@ -1,0 +1,4 @@
+from _2019.dq.part5.ing rt *
+OUTPUT_DIRECTORY = "diffyq/\art5"
+SCENES_IN_ORDER = [
+]
