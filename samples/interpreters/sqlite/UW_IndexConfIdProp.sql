@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX/*0*/w_cc_id_property ON /*0*/uw_campaign_c(cc_campaign_id,cc_property);

@@ -1,0 +1,1 @@
+insert into `00` (id, abbrtion, shription, created_at, updated_at) VALUES (0,'000000','00000000000000000000000000',now(),now());

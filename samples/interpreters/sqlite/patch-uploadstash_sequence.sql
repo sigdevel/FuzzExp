@@ -1,0 +1,2 @@
+ALTER TABLE adash RENAME us_id_seq TO uploadstash_us_id_seq;
+ALTER TABLE uploadstash ALTER C00000 00000 000 0000000 0000000('0000000000000000');
